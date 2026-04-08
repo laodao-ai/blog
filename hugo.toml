@@ -1,0 +1,27 @@
+baseURL = "https://laodao-ai.com"
+title = "老刀AI码场"
+theme = "PaperMod"
+languageCode = "zh-CN"
+defaultContentLanguage = "zh"
+paginate = 10
+
+[params]
+ShowReadingTime = true
+ShowCodeCopyButtons = true
+ShowPostNavLinks = true
+ShowBreadCrumbs = true
+ShowShareButtons = false
+defaultTheme = "auto"
+
+[markup.highlight]
+noClasses = true
+codeFences = true
+style = "monokai"
+
+[outputs]
+home = ["HTML", "RSS"]
+section = ["HTML", "RSS"]
+
+[outputFormats.RSS]
+mediaType = "application/rss+xml"
+baseName = "index"
