@@ -12,6 +12,34 @@ ShowPostNavLinks = true
 ShowBreadCrumbs = true
 ShowShareButtons = false
 defaultTheme = "auto"
+ShowToc = true
+TocOpen = false
+description = "Go 开发者的 AI 工程方法论实战"
+
+[params.homeInfoParams]
+Title = "老刀AI码场"
+Content = "Go 开发者的 AI 工程方法论实战。Spec 驱动开发、Claude Code、OpenSpec——让 AI 写代码变得可控、可维护、可交付。"
+
+[[params.socialIcons]]
+name = "rss"
+url = "/index.xml"
+
+[[params.socialIcons]]
+name = "github"
+url = "https://github.com/laodao-ai"
+
+[[params.socialIcons]]
+name = "x-twitter"
+url = "https://x.com/laodaocheney"
+
+[params.comments]
+enabled = false
+
+[params.waline]
+serverURL = "https://waline.laodao-ai.com"
+reaction = true
+comment = false
+pageview = true
 
 [markup.highlight]
 noClasses = true

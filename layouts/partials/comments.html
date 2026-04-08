@@ -1,0 +1,26 @@
+<style>
+    .wl-comment { display: none  !important; }
+    .wl-meta-head { display: none  !important; }
+    .wl-meta-foot { display: none  !important; }
+    .wl-operation { display: none  !important; }
+</style>
+
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css">
+<div id="waline"></div>
+<script type="module">
+    import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+    init({
+      el: '#waline',
+      serverURL: '{{ .Site.Params.waline.serverURL }}',
+      reaction: [
+    'https://unpkg.com/@waline/emojis@1.1.0/bilibili/bb_thumbsup.png',
+    'https://unpkg.com/@waline/emojis@1.1.0/weibo/weibo_heart_eyes.png',
+    'https://unpkg.com/@waline/emojis@1.1.0/weibo/weibo_clap.png',
+    'https://unpkg.com/@waline/emojis@1.1.0/bilibili/bb_confused.png',
+      ],
+
+      comment: false,
+      pageview: true,
+      lang: 'zh-CN',
+    });
+</script>
