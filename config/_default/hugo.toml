@@ -10,6 +10,9 @@ hasCJKLanguage = true
 buildDrafts = false
 buildFuture = false
 
+[mediaTypes."text/markdown"]
+  suffixes = ["md"]
+
 [permalinks]
   posts = "/posts/:slug/"
 
@@ -27,9 +30,9 @@ buildFuture = false
   priority = 0.5
 
 [outputs]
-  home = ["HTML", "RSS", "JSON"]
+  home = ["HTML", "RSS", "JSON", "llmstxt", "llmsfulltxt"]
   section = ["HTML", "RSS"]
-  page = ["HTML"]
+  page = ["HTML", "markdown"]
 
 [outputFormats.llmstxt]
   mediaType = "text/plain"

@@ -1,0 +1,18 @@
+# {{ .Site.Title }} — 全站文章
+
+> 自动生成于 {{ now.Format "2006-01-02" }}，共 {{ len (where .Site.RegularPages "Section" "posts") }} 篇文章
+{{ range where .Site.RegularPages "Section" "posts" }}
+---
+title: "{{ .Title }}"
+date: {{ .Date.Format "2006-01-02" }}
+url: {{ .Permalink }}
+{{- with .Params.tags }}
+tags: [{{ range $i, $t := . }}{{ if $i }}, {{ end }}"{{ $t }}"{{ end }}]
+{{- end }}
+{{- with .Params.summary }}
+summary: "{{ . }}"
+{{- end }}
+---
+
+{{ .RawContent }}
+{{ end }}

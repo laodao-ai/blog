@@ -1,0 +1,14 @@
+# {{ .Site.Title }}
+
+> {{ .Site.Params.description | default (.Site.Title) }}
+
+## 文章
+{{ range where .Site.RegularPages "Section" "posts" }}
+- [{{ .Title }}]({{ .Permalink }}): {{ .Params.summary | default .Summary }}
+{{- end }}
+{{ if .Site.Taxonomies.series }}
+## 系列
+{{ range .Site.Taxonomies.series }}
+- [{{ .Page.Title }}]({{ .Page.Permalink }}): {{ len .Pages }} 篇文章
+{{- end }}
+{{ end }}
