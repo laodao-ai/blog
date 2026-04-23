@@ -1,0 +1,41 @@
+[[main]]
+  name = "文章"
+  pageRef = "posts"
+  weight = 10
+
+[[main]]
+  name = "系列"
+  pageRef = "series"
+  weight = 20
+
+[[main]]
+  name = "关于"
+  pageRef = "about"
+  weight = 30
+
+[[main]]
+  identifier = "search"
+  pre = "search"
+  url = "/search/"
+  weight = 40
+
+[[main]]
+  identifier = "github"
+  pre = "github"
+  url = "https://github.com/laodao-ai"
+  weight = 50
+
+[[footer]]
+  name = "标签"
+  pageRef = "tags"
+  weight = 10
+
+[[footer]]
+  name = "分类"
+  pageRef = "categories"
+  weight = 20
+
+[[footer]]
+  name = "系列"
+  pageRef = "series"
+  weight = 30
