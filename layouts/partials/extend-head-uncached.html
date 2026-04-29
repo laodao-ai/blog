@@ -1,0 +1,59 @@
+{{- /*
+  extend-head-uncached.html — Blowfish 官方扩展点（每页独立）
+
+  按页面类型条件注入 schema.org JSON-LD：
+    - 文章页（.Kind == "page" 且路径以 /posts/ 开头）→ Article
+    - about 页（路径 = /about/）→ Person
+    - 其他（首页、列表、分类、tags）→ 不输出
+
+  实现要点（避坑）：
+    1. 用 dict 构造 + 整体 jsonify + safeJS——Hugo 默认对 jsonify 输出再做
+       HTML escape，会把 "Cheney" 输出成 "\"Cheney\""；safeJS 标记内容已
+       安全，不再二次 escape
+    2. inline 写法（"key": {{ val | jsonify }}）同样有 escape 问题，验证证伪
+
+  HowTo / FAQPage 留空，阶段 4 通过 shortcode 实现。
+
+  设计决策详见：
+    openspec/changes/implement-blog-phase-1-content-and-deploy/design.md  决策 3
+*/ -}}
+
+{{- $author := .Site.Params.Author.name | default "老刀" -}}
+{{- $aboutUrl := printf "%sabout/" .Site.BaseURL -}}
+
+{{- if and (eq .Kind "page") (hasPrefix .RelPermalink "/posts/") -}}
+  {{- $jsonld := dict
+    "@context" "https://schema.org"
+    "@type" "Article"
+    "headline" .Title
+    "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00")
+    "dateModified" (.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+    "author" (dict
+      "@type" "Person"
+      "name" $author
+      "url" $aboutUrl)
+    "url" .Permalink
+    "mainEntityOfPage" (dict
+      "@type" "WebPage"
+      "@id" .Permalink)
+  -}}
+  {{- with .Summary -}}
+    {{- $jsonld = merge $jsonld (dict "description" (. | plainify)) -}}
+  {{- end }}
+<script type="application/ld+json">
+{{ $jsonld | jsonify (dict "indent" "  ") | safeJS }}
+</script>
+{{- else if eq .RelPermalink "/about/" -}}
+  {{- $jsonld := dict
+    "@context" "https://schema.org"
+    "@type" "Person"
+    "name" $author
+    "url" .Permalink
+    "sameAs" (slice "https://github.com/laodao-ai")
+  -}}
+<script type="application/ld+json">
+{{ $jsonld | jsonify (dict "indent" "  ") | safeJS }}
+</script>
+{{- end -}}
+
+{{- /* HowTo / FAQPage 留空，阶段 4 通过 shortcode 实现 */ -}}
