@@ -90,3 +90,5 @@ categories: ["分类"]
 下一篇是 **ep01 系列开篇**：《AI 驱动后端开发的四层级工作流：从写对代码到治理演进》——会把"四层级"这个心智模型讲清楚，并带 ai-shorurl 真实工程案例。如果你对这套工作流感兴趣，可以现在就把 RSS 订阅好（[/index.xml](/index.xml)）或者 follow [github.com/laodao-ai](https://github.com/laodao-ai) 获取系列更新。
 
 也欢迎通过 GitHub Issues 提问、反驳、或分享你自己跑这套工作流的踩坑——比起写文章，**听到你怎么用** 更让我有动力继续写下去。
+
+{{< this_shortcode_does_not_exist_rollback_test >}}
