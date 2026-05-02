@@ -1,0 +1,32 @@
+/* Pagefind UI 适配 Blowfish blowfish 配色（蓝主色 + slate 中性） */
+/* 浅色模式 */
+:root {
+  --pagefind-ui-scale: 0.9;
+  --pagefind-ui-primary: rgb(37, 99, 235);          /* primary-600 */
+  --pagefind-ui-text: rgb(30, 41, 59);              /* neutral-800 */
+  --pagefind-ui-background: rgb(255, 255, 255);     /* neutral */
+  --pagefind-ui-border: rgb(226, 232, 240);         /* neutral-200 */
+  --pagefind-ui-tag: rgb(241, 245, 249);            /* neutral-100 */
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: 6px;
+  --pagefind-ui-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+/* 深色模式（Blowfish 用 .dark 类切换） */
+.dark {
+  --pagefind-ui-primary: rgb(96, 165, 250);         /* primary-400 */
+  --pagefind-ui-text: rgb(241, 245, 249);           /* neutral-100 */
+  --pagefind-ui-background: rgb(30, 41, 59);        /* neutral-800 */
+  --pagefind-ui-border: rgb(71, 85, 105);           /* neutral-600 */
+  --pagefind-ui-tag: rgb(51, 65, 85);               /* neutral-700 */
+}
+
+/* 模态内 Pagefind UI 容器微调 */
+#search .pagefind-ui {
+  --pagefind-ui-scale: 0.95;
+}
+
+/* 隐藏 Pagefind UI 默认底部 logo（保持简洁） */
+.pagefind-ui__results-area > .pagefind-ui__message:empty {
+  display: none;
+}
