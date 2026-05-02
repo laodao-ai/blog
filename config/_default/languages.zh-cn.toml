@@ -7,7 +7,11 @@ title = "老刀AI码场"
   displayName = "简体中文"
   isoCode = "zh-cn"
   dateFormat = "2006-01-02"
-  description = "Spec 驱动开发实战 · Go · Claude Code · OpenSpec"
+  description = "老刀Cheney 的技术博客，专注用 Claude Code + OpenSpec + SuperPowers 工具链做 Spec 驱动开发（SDD）实战。覆盖 Go 后端、AI 编程、工程化方法论，面向被 AI 冲击但仍想做扎实工程的中国开发者。同步更新 B站视频与公众号。"
+  # 全站默认社交分享卡片图。Hugo _internal/opengraph.html + twitter_cards.html 都从此处拿
+  # 文章 leaf bundle 含 *featured*/*cover*/*thumbnail* 资源时被自动覆盖
+  # 设计源：design-system/v2/og/og-default-template.html
+  images = ["og-default.png"]
 
 [params.author]
   name = "Cheney"
