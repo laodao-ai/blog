@@ -1,0 +1,72 @@
+{{/*
+  项目层覆盖 Blowfish article-pagination.html
+  优先按 series_order 在同系列内取相邻，否则回退 .NextInSection/.PrevInSection
+  （决策 2 · implement-blog-phase-2-content-batch1）
+*/}}
+{{ if .Params.showPagination | default (.Site.Params.article.showPagination | default true) }}
+  {{ $prev := .PrevInSection }}
+  {{ $next := .NextInSection }}
+
+  {{/* series_order 优先 */}}
+  {{ if .Params.series }}
+    {{ $seriesName := index .Params.series 0 }}
+    {{ $sameSeries := where (where .Site.RegularPages "Section" "posts") "Params.series" "intersect" (slice $seriesName) }}
+    {{ $sorted := sort $sameSeries "Params.series_order" "asc" }}
+    {{ $idx := -1 }}
+    {{ range $i, $p := $sorted }}
+      {{ if eq $p.RelPermalink $.RelPermalink }}{{ $idx = $i }}{{ end }}
+    {{ end }}
+    {{ if ge $idx 0 }}
+      {{ $prev = "" }}
+      {{ $next = "" }}
+      {{ if gt $idx 0 }}{{ $prev = index $sorted (sub $idx 1) }}{{ end }}
+      {{ if lt $idx (sub (len $sorted) 1) }}{{ $next = index $sorted (add $idx 1) }}{{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{ if .Params.invertPagination | default (.Site.Params.article.invertPagination | default false) }}
+    {{ $tmp := $prev }}
+    {{ $prev = $next }}
+    {{ $next = $tmp }}
+  {{ end }}
+
+  {{ if or $prev $next }}
+    <div class="pt-8">
+      <hr class="border-dotted border-neutral-300 dark:border-neutral-600">
+      <div class="flex justify-between pt-3">
+        <span class="flex flex-col">
+          {{ if $prev }}
+            <a
+              class="flex text-neutral-700 hover:text-primary-600 dark:text-neutral dark:hover:text-primary-400"
+              href="{{ $prev.RelPermalink }}">
+              <span class="leading-6">
+                <span class="inline-block rtl:rotate-180">&larr;</span>&ensp;{{ $prev.Title | emojify }}
+              </span>
+            </a>
+            {{ if .Params.showDate | default (.Site.Params.article.showDate | default true) }}
+              <span class="ms-6 mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                {{ partial "meta/date.html" $prev.Date }}
+              </span>
+            {{ end }}
+          {{ end }}
+        </span>
+        <span class="flex flex-col items-end">
+          {{ if $next }}
+            <a
+              class="flex text-right text-neutral-700 hover:text-primary-600 dark:text-neutral dark:hover:text-primary-400"
+              href="{{ $next.RelPermalink }}">
+              <span class="leading-6">
+                {{ $next.Title | emojify }}&ensp;<span class="inline-block rtl:rotate-180">&rarr;</span>
+              </span>
+            </a>
+            {{ if .Params.showDate | default (.Site.Params.article.showDate | default true) }}
+              <span class="me-6 mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                {{ partial "meta/date.html" $next.Date }}
+              </span>
+            {{ end }}
+          {{ end }}
+        </span>
+      </div>
+    </div>
+  {{ end }}
+{{ end }}
