@@ -3,9 +3,26 @@ name: Deploy Blog
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
+  check-summary:
+    name: Quality gate · check-summary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        # 不需要 submodules（仅扫描 content/posts/**/index.md）
+
+      - name: Run check-summary script
+        run: bash scripts/check-summary.sh
+
   deploy:
+    name: Build and deploy
+    needs: check-summary
+    # 仅在 push 到 main 时部署；PR 只跑 check-summary
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

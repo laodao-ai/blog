@@ -12,6 +12,15 @@
 #   0 - 全部通过
 #   1 - 至少一篇违例
 #   2 - 脚本自身错误（参数/路径）
+#
+# 本地直跑：
+#   bash scripts/check-summary.sh
+#
+# 失败输出格式（机器/人类双友好，CI 上一眼定位）：
+#   [FAIL] <相对路径>
+#     reason:   <违例原因>
+#     expected: <期望区间或条件>
+#     actual:   <实测值>
 
 set -euo pipefail
 
@@ -28,7 +37,18 @@ SUMMARY_MIN=80
 SUMMARY_MAX=200
 
 checked=0
-violations=()
+violation_count=0
+# 累积违例输出，结构化四要素：path / reason / expected / actual
+violations_out=""
+
+record_violation() {
+  # $1=path  $2=reason  $3=expected  $4=actual
+  violation_count=$((violation_count + 1))
+  violations_out+="[FAIL] $1"$'\n'
+  violations_out+="  reason:   $2"$'\n'
+  violations_out+="  expected: $3"$'\n'
+  violations_out+="  actual:   $4"$'\n'
+}
 
 # 提取 front matter 中 summary 字段值（YAML 单/双引号或裸值，单行）
 extract_summary() {
@@ -100,30 +120,35 @@ for f in "${posts[@]}"; do
 
   # 规则 1：summary 长度
   len="$(char_count "$summary")"
-  if (( len < SUMMARY_MIN )); then
-    violations+=("$rel: summary 长度 $len < $SUMMARY_MIN")
-  elif (( len > SUMMARY_MAX )); then
-    violations+=("$rel: summary 长度 $len > $SUMMARY_MAX")
+  if (( len < SUMMARY_MIN || len > SUMMARY_MAX )); then
+    record_violation "$rel" \
+      "summary length out of range" \
+      "${SUMMARY_MIN}-${SUMMARY_MAX} chars" \
+      "${len} chars"
   fi
 
   # 规则 2：summary 不含 TODO
   if [[ "$summary" == *TODO* ]]; then
-    violations+=("$rel: summary 含字面量 TODO（请填写真实摘要）")
+    record_violation "$rel" \
+      "summary contains TODO placeholder" \
+      "no literal 'TODO' in summary" \
+      "summary contains 'TODO'"
   fi
 
   # 规则 3：正文首段不含 TODO
   if [[ "$first_para" == *TODO* ]]; then
-    violations+=("$rel: 正文首段含字面量 TODO（请填写正文）")
+    record_violation "$rel" \
+      "first paragraph contains TODO placeholder" \
+      "no literal 'TODO' in first paragraph" \
+      "first paragraph contains 'TODO'"
   fi
 done
 
-if [[ ${#violations[@]} -gt 0 ]]; then
-  echo "✗ check-summary 失败：${#violations[@]} 条违例"
-  for v in "${violations[@]}"; do
-    echo "  - $v"
-  done
+if (( violation_count > 0 )); then
+  echo "✗ check-summary 失败：${violation_count} 条违例"
   echo ""
-  echo "已检查 $checked 篇，违例 ${#violations[@]} 篇"
+  printf '%s' "$violations_out"
+  echo "已检查 $checked 篇，违例 ${violation_count} 篇"
   exit 1
 fi
 
