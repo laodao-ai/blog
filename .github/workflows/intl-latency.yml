@@ -1,0 +1,57 @@
+name: CN Intl Latency Monitor
+
+# 由 GHA runner（美国/欧洲）每周采样 laodao-ai.cn 国际首屏延迟，
+# 兑现 roadmap blog-v2-rebuild 阶段 4.G 的 Q6 决策权衡兜底承诺。
+# 详见 geo-audit/README.md（阈值规则 + 触发评估流程）。
+#
+# 安全审计：本 workflow 不引用任何 github.event.* 用户可控输入；
+# secrets-free；$(date -u) 为 shell 内置时间，无注入面。
+
+on:
+  schedule:
+    # 每周一 02:00 UTC = 北京 10:00（业务高峰前；与 deploy.yml 错峰）
+    - cron: '0 2 * * 1'
+  workflow_dispatch:  # 手动触发，用于验证或紧急复测
+
+permissions:
+  contents: write     # 需要 commit 回 csv
+
+jobs:
+  measure:
+    name: Measure & record P95
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run latency probe
+        run: bash scripts/measure-cn-latency.sh
+
+      - name: Commit results
+        env:
+          DATE_UTC: ${{ github.run_started_at }}
+        run: |
+          DATE_TAG="$(date -u +%Y-%m-%d)"
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add geo-audit/
+          if git diff --staged --quiet; then
+            echo "No changes to commit (csv unchanged — unlikely)"
+          else
+            git commit -m "chore(geo-audit): weekly cn intl latency ${DATE_TAG}"
+            git push
+          fi
+
+      - name: Threshold check (warn-only)
+        run: |
+          # 单周 P95 > 3000ms 立即告警（不 fail）；连续 4 周 > 1500ms 由人工巡检
+          DATE_TAG="$(date -u +%Y-%m-%d)"
+          today_max=$(awk -F, -v d="${DATE_TAG}" \
+            '$1 == d { if ($3+0 > max) max = $3+0 } END { print max+0 }' \
+            geo-audit/cn-intl-latency.csv)
+          echo "Today's max P95 across pages: ${today_max}ms"
+          if [ "${today_max:-0}" -gt 3000 ]; then
+            echo "::warning ::单周 P95 > 3000ms (${today_max}ms) → 触发 Q6 方案 C 切换评估"
+          fi
