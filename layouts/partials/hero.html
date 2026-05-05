@@ -1,0 +1,16 @@
+{{- /*
+  hero.html · v3 editorial 可选首图
+  frontmatter `hero_image: "cover.png"` → 渲染；缺省不渲染任何区块
+  规范：spec.md "可选首图 Hero"
+*/ -}}
+{{- with .Params.hero_image -}}
+  {{- $img := $.Resources.GetMatch . -}}
+  {{- if $img -}}
+  <figure class="hero">
+    <img src="{{ $img.RelPermalink }}" alt="{{ $.Title }}">
+  </figure>
+  {{- with $.Params.hero_caption -}}
+    <p class="hero-caption">{{ . }}</p>
+  {{- end -}}
+  {{- end -}}
+{{- end -}}

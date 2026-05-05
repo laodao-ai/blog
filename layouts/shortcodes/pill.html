@@ -1,0 +1,9 @@
+{{- /*
+  pill shortcode · 行内状态徽章
+  用法：{{< pill type="danger" >}}HARD-GATE{{< /pill >}}
+  type: ok | warn | danger | (默认 default 中性样式)
+*/ -}}
+{{- $type := .Get "type" | default "default" -}}
+{{- $valid := slice "ok" "warn" "danger" "default" -}}
+{{- if not (in $valid $type) -}}{{- $type = "default" -}}{{- end -}}
+<span class="pill pill-{{ $type }}">{{ .Inner | markdownify }}</span>

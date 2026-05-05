@@ -1,0 +1,21 @@
+{{- /*
+  figure shortcode · v3 editorial 带 caption 的图（覆盖 Hugo 默认）
+  用法：{{< figure src="diagram.png" caption="五阶段闭环" >}}
+*/ -}}
+{{- $src := .Get "src" -}}
+{{- $alt := .Get "alt" | default ($.Get "caption") | default "" -}}
+{{- $caption := .Get "caption" -}}
+{{- $img := "" -}}
+{{- if $src -}}
+  {{- $img = $.Page.Resources.GetMatch $src -}}
+{{- end -}}
+<figure class="editorial-figure">
+  {{- if $img -}}
+    <img src="{{ $img.RelPermalink }}" alt="{{ $alt }}">
+  {{- else if $src -}}
+    <img src="{{ $src }}" alt="{{ $alt }}">
+  {{- end -}}
+  {{- with $caption -}}
+    <figcaption>{{ . | markdownify }}</figcaption>
+  {{- end -}}
+</figure>

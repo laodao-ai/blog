@@ -1,0 +1,39 @@
+{{- /*
+  masthead.html · v3 editorial 顶部 sticky 导航
+  - logo: >_ 老刀AI码场（>_ accent + _ 闪烁；aria 处理屏阅）
+  - 中部菜单：从 .Site.Menus.main 渲染（4 categories + 系列 + 关于）
+  - 右侧图标：搜索 + GitHub（指向 org `laodao-ai`）
+  规范：design-system/v3/DESIGN.md §7 / §8
+*/ -}}
+<header class="editorial-masthead" data-od-id="masthead">
+  <div class="editorial-masthead-inner">
+    <a href="{{ "/" | relLangURL }}" class="masthead-logo" aria-label="{{ site.Title }}首页">
+      <span class="prompt" aria-hidden="true">&gt;</span><span class="brand">{{ site.Title }}</span>
+    </a>
+
+    <nav>
+      <ul class="masthead-nav">
+        {{- range .Site.Menus.main -}}
+          {{- if and (ne .Identifier "search") (ne .Identifier "github") -}}
+            {{- $cur := $.RelPermalink -}}
+            {{- $isActive := or (eq $cur .URL) (and (ne .URL "/") (hasPrefix $cur .URL)) -}}
+            <li{{ if $isActive }} class="menu-active"{{ end }}>
+              <a href="{{ .URL | relLangURL }}"{{ with .Title }} title="{{ . }}"{{ end }}{{ if $isActive }} aria-current="page"{{ end }}>{{ .Name }}</a>
+            </li>
+          {{- end -}}
+        {{- end -}}
+      </ul>
+    </nav>
+
+    <div class="masthead-icons">
+      <a href="{{ "/search/" | relLangURL }}" aria-label="搜索" title="搜索">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </a>
+      {{- with site.Params.author.social.github_org -}}
+      <a href="https://github.com/{{ . }}" aria-label="GitHub Org" title="GitHub: {{ . }}" rel="noopener" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2.16c-3.2.69-3.87-1.36-3.87-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.69 1.24 3.34.95.11-.74.4-1.24.72-1.53-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18.91-.25 1.89-.38 2.86-.38.97 0 1.95.13 2.86.38 2.19-1.49 3.15-1.18 3.15-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.68.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+      </a>
+      {{- end -}}
+    </div>
+  </div>
+</header>

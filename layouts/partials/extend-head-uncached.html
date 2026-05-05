@@ -18,6 +18,12 @@
     openspec/changes/fix-blog-duplicate-article-schema/design.md 决策 1-2
 */ -}}
 
+{{- /* v3 editorial.css 注入（每页都需要） */ -}}
+{{- with resources.Get "css/editorial.css" -}}
+  {{- $css := . | resources.Minify | resources.Fingerprint -}}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
+{{- end -}}
+
 {{- $author := .Site.Params.Author.name | default "老刀" -}}
 
 {{- if eq .RelPermalink "/about/" -}}

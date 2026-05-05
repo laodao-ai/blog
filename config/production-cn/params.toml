@@ -1,5 +1,9 @@
+env = "production-cn"
 beianNumber = "沪ICP备19016066号-8"
 beianUrl = "https://beian.miit.gov.cn"
+# 公安备案（公网安备）— 占位，待用户拿到实际号码后替换
+policeBeianNumber = "沪公网安备 31010XXXXXXXXXXXX号"
+policeBeianCode = "31010XXXXXXXXXXXX"  # 用于跳转 mps.gov.cn 查询页 query 参数
 
 [article]
 sharingLinks = ["weibo", "wechat-copy", "email"]

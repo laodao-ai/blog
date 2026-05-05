@@ -1,6 +1,6 @@
 colorScheme = "blowfish"
-defaultAppearance = "dark"
-autoSwitchAppearance = true
+defaultAppearance = "light"           # 改自 "dark"，editorial light 是本次设计基线
+autoSwitchAppearance = false          # 改自 true，暗色精修前不自动跟随系统（决策 14）
 
 enableSearch = true
 enableCodeCopy = true
@@ -34,25 +34,25 @@ smartTOCHideUnfocusedChildren = true
   cardViewScreenWidth = false
 
 [article]
-  showDate = true
-  showDateOnlyInArticle = false
-  showDateUpdated = true
-  showAuthor = true
-  showHero = false
-  showBreadcrumbs = true
-  showDraftLabel = true
-  showEdit = false
-  seriesOpened = true
-  showHeadingAnchors = true
-  showPagination = true
-  showReadingTime = true
-  showTableOfContents = true
-  showRelatedContent = true
-  relatedContentLimit = 3
-  showTaxonomies = true
-  showWordCount = false
+  # v3 editorial template 接管的开关（保留以兼容；无副作用）
+  showDate = true                      # ✘ 由 v3 article-header eyebrow 自渲染
+  showDateUpdated = true               # ✘ 同上
+  showAuthor = true                    # ✘ 由 v3 byline 自渲染
+  showHero = false                     # ✘ 由 v3 hero.html 按 hero_image 字段控制
+  showRelatedContent = true            # ✘ 由 v3 related-posts.html 自渲染
+  showReadingTime = true               # ✘ 由 v3 eyebrow 自渲染
+  # v3 仍保留/复用的 Blowfish 行为
+  showBreadcrumbs = false              # 关闭，editorial 风格不要面包屑
+  showDraftLabel = true                # 草稿标签（上线前用）
+  showHeadingAnchors = true            # H2/H3 锚点链接
+  showPagination = true                # 启用 prev/next（v3 已重写 article-pagination.html）
+  showTableOfContents = true           # 启用 TOC（Blowfish 默认渲染）
+  seriesOpened = true                  # series 元数据展开
+  showTaxonomies = false               # 关闭，eyebrow + categories 已显示
+  showWordCount = false                # 由 v3 eyebrow 自渲染
   showZenMode = false
   sharingLinks = ["twitter", "reddit", "linkedin", "email"]
+  # invertPagination = false           # phase-2 series_order 决定方向，无需反转
 
 [list]
   showHero = false
@@ -79,3 +79,6 @@ smartTOCHideUnfocusedChildren = true
   groupByYear = false
   cardView = true
   cardViewScreenWidth = false
+
+# [author] 与 [author.social] 真相源在 config/_default/languages.zh-cn.toml
+# （Hugo 多语言场景下 lang 文件优先级高，避免双源冲突）

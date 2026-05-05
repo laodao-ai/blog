@@ -1,30 +1,51 @@
+# 主菜单 · v3 editorial 重组（[brainstorm-amendment B8/B10]）
+# 4 categories（内容入口）+ 系列 + 关于 + 右侧搜索/GitHub 图标
+
 [[main]]
-  name = "文章"
-  pageRef = "posts"
+  name = "SDD 工作流"
+  pageRef = "categories/sdd-工作流"
+  title = "Spec-Driven Development 工作流"
   weight = 10
+
+[[main]]
+  name = "工具链"
+  pageRef = "categories/工具链"
+  weight = 20
+
+[[main]]
+  name = "项目实战"
+  pageRef = "categories/项目实战"
+  weight = 30
+
+[[main]]
+  name = "嵌入式"
+  pageRef = "categories/嵌入式"
+  weight = 40
 
 [[main]]
   name = "系列"
   pageRef = "series"
-  weight = 20
+  weight = 50
 
 [[main]]
   name = "关于"
   pageRef = "about"
-  weight = 30
+  weight = 60
 
+# 右侧图标（masthead 自己渲染，不走菜单循环；这里保留是为了菜单数据完整）
 [[main]]
   identifier = "search"
   pre = "search"
   url = "/search/"
-  weight = 40
+  weight = 90
 
 [[main]]
   identifier = "github"
   pre = "github"
   url = "https://github.com/laodao-ai"
-  weight = 50
+  weight = 99
 
+# 底部菜单（保留 phase-2 设置）
 [[footer]]
   name = "标签"
   pageRef = "tags"

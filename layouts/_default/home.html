@@ -1,0 +1,41 @@
+{{- /*
+  home.html · v3 editorial 首页 profile 区
+  - 96×96 大头像 + name + tagline (mono accent) + bio + 社交链接
+  - 自渲染最近 6 篇文章（不复用 Blowfish recent-articles，[brainstorm-amendment B4]）
+  规范：spec.md "首页 Profile 区"
+*/ -}}
+{{ define "main" }}
+<main class="article-wrap" id="main-content">
+  {{- $author := site.Params.author -}}
+  <section class="profile-header">
+    <div class="profile-avatar">
+      {{- with $author.avatar -}}
+        <img src="{{ . | relURL }}" alt="{{ $author.name }}">
+      {{- else -}}
+        {{ $author.initials | default "LC" }}
+      {{- end -}}
+    </div>
+    <h1 class="profile-name">{{ $author.name }}</h1>
+    {{- with $author.tagline -}}<div class="profile-tagline">{{ . }}</div>{{- end -}}
+    {{- with $author.bio -}}<div class="profile-bio">{{ . | markdownify }}</div>{{- end -}}
+    <div class="profile-social">{{- partial "social-links.html" . -}}</div>
+  </section>
+
+  <section class="profile-recent">
+    <div class="profile-recent-header">最近文章</div>
+    <div class="profile-recent-list">
+      {{- $recent := first 6 (where site.RegularPages "Section" "posts") -}}
+      {{- range $recent -}}
+        <a class="profile-recent-item" href="{{ .RelPermalink }}">
+          <div class="profile-recent-meta">
+            {{- with index .Params.categories 0 -}}{{ . }} · {{- end -}}
+            {{ .Date.Format "2006-01-02" }} · 阅读约 {{ .ReadingTime }} min
+          </div>
+          <div class="profile-recent-title">{{ .Title }}</div>
+          {{- with .Summary -}}<div class="profile-recent-summary">{{ . | plainify | truncate 120 }}</div>{{- end -}}
+        </a>
+      {{- end -}}
+    </div>
+  </section>
+</main>
+{{ end }}

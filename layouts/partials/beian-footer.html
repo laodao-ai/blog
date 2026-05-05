@@ -1,7 +1,20 @@
+{{- /*
+  beian-footer.html · 大陆站点合规备案
+  - ICP 备案：跳 beian.miit.gov.cn
+  - 公网安备：跳 beian.mps.gov.cn 查询页（用 policeBeianCode 拼 ?code=）
+  仅 production-cn 配置 beianNumber，com 站不渲染
+*/ -}}
 {{- with .Site.Params.beianNumber -}}
-<div class="mt-2 text-center text-xs text-neutral-500 dark:text-neutral-400">
-  <a href="{{ $.Site.Params.beianUrl | default "https://beian.miit.gov.cn" }}"
-     target="_blank"
-     rel="noopener noreferrer">{{ . }}</a>
+<div class="editorial-beian">
+  <div>
+    <a href="{{ $.Site.Params.beianUrl | default "https://beian.miit.gov.cn" }}"
+       target="_blank" rel="noopener noreferrer">{{ . }}</a>
+  </div>
+  {{- with $.Site.Params.policeBeianNumber -}}
+  <div>
+    <a href="https://beian.mps.gov.cn/#/query/webSearch?code={{ $.Site.Params.policeBeianCode }}"
+       target="_blank" rel="noopener noreferrer">{{ . }}</a>
+  </div>
+  {{- end -}}
 </div>
 {{- end -}}

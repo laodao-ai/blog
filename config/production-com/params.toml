@@ -1,2 +1,4 @@
+env = "production-com"
+
 [article]
 sharingLinks = ["twitter", "reddit", "linkedin", "email"]
