@@ -18,8 +18,8 @@ jobs:
       - name: Run check-summary script
         run: bash scripts/check-summary.sh
 
-  deploy:
-    name: Build and deploy
+  deploy-com:
+    name: Build and deploy · laodao-ai.com
     needs: check-summary
     # 仅在 push 到 main 时部署；PR 只跑 check-summary
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -40,7 +40,7 @@ jobs:
           extended: true
 
       - name: Build
-        run: hugo --minify --gc
+        run: hugo --environment production-com --minify --gc
 
       - name: Build Pagefind index
         run: npx -y pagefind@latest --site public
@@ -67,3 +67,52 @@ jobs:
       - name: Health check
         run: |
           curl -f --retry 3 --retry-delay 2 https://laodao-ai.com
+
+  deploy-cn:
+    name: Build and deploy · laodao-ai.cn
+    needs: check-summary
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: "0.161.1"
+          extended: true
+
+      - name: Build
+        run: hugo --environment production-cn --minify --gc
+
+      - name: Build Pagefind index
+        run: npx -y pagefind@latest --site public
+
+      - name: Configure SSH
+        env:
+          DEPLOY_CN_SSH_KEY: ${{ secrets.DEPLOY_CN_SSH_KEY }}
+          KNOWN_HOSTS_CN: ${{ secrets.KNOWN_HOSTS_CN }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$DEPLOY_CN_SSH_KEY" > ~/.ssh/deploy_cn_key
+          chmod 600 ~/.ssh/deploy_cn_key
+          echo "$KNOWN_HOSTS_CN" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Deploy via rsync
+        env:
+          VPS_CN_HOST: ${{ secrets.VPS_CN_HOST }}
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_cn_key -o StrictHostKeyChecking=yes" \
+            ./public/ deploy@$VPS_CN_HOST:
+
+      - name: Health check
+        run: |
+          curl -f --retry 3 --retry-delay 2 https://laodao-ai.cn

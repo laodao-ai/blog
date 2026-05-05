@@ -1,0 +1,56 @@
+{{ with .Params.sharingLinks | default (.Site.Params.article.sharingLinks | default false) }}
+  {{ $links := hugo.Data.sharing }}
+  {{ $permalink := $.Permalink }}
+  <section class="flex flex-row flex-wrap justify-center pt-4 text-xl">
+    {{ range . }}
+      {{ $key := . }}
+      {{ with index $links . }}
+        {{ if eq $key "wechat-copy" }}
+          {{/* 复制链接按钮：不走 URL scheme，用 JS Clipboard API */}}
+          <button
+            class="m-1 rounded bg-neutral-300 p-1.5 text-neutral-700 hover:bg-primary-500 hover:text-neutral dark:bg-neutral-700 dark:text-neutral-300 dark:hover:bg-primary-400 dark:hover:text-neutral-800 wechat-copy-btn"
+            data-url="{{ $permalink }}"
+            data-label-default="{{ i18n .title }}"
+            data-label-copied="已复制"
+            title="{{ i18n .title }}"
+            aria-label="{{ i18n .title }}"
+            type="button">
+            {{ partial "icon.html" .icon }}
+          </button>
+        {{ else }}
+          <a
+            class="m-1 rounded bg-neutral-300 p-1.5 text-neutral-700 hover:bg-primary-500 hover:text-neutral dark:bg-neutral-700 dark:text-neutral-300 dark:hover:bg-primary-400 dark:hover:text-neutral-800"
+            target="_blank"
+            href="{{ printf .url $.Permalink $.Title | safeURL }}"
+            title="{{ i18n .title }}"
+            aria-label="{{ i18n .title }}">
+            {{ partial "icon.html" .icon }}
+          </a>
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  </section>
+  {{ if in . "wechat-copy" }}
+  <script>
+    (function () {
+      document.querySelectorAll('.wechat-copy-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var url = btn.getAttribute('data-url');
+          var labelDefault = btn.getAttribute('data-label-default');
+          var labelCopied = btn.getAttribute('data-label-copied');
+          navigator.clipboard.writeText(url).then(function () {
+            btn.setAttribute('title', labelCopied);
+            btn.setAttribute('aria-label', labelCopied);
+            btn.setAttribute('data-copying', '1');
+            setTimeout(function () {
+              btn.setAttribute('title', labelDefault);
+              btn.setAttribute('aria-label', labelDefault);
+              btn.removeAttribute('data-copying');
+            }, 2000);
+          });
+        });
+      });
+    })();
+  </script>
+  {{ end }}
+{{ end }}

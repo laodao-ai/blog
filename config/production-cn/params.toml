@@ -1,0 +1,5 @@
+beianNumber = "沪ICP备19016066号-8"
+beianUrl = "https://beian.miit.gov.cn"
+
+[article]
+sharingLinks = ["weibo", "wechat-copy", "email"]
