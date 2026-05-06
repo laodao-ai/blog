@@ -811,6 +811,103 @@
 }
 
 /* ===========================================================================
+   [eng-review-amendment T3] 首页 profile 区追加：工具链 chip + 金句 pullquote
+   规范：spec.md "首页工具链 Chip 组" + "首页 Profile 区"（MODIFIED）
+   =========================================================================== */
+.toolchain-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin: 16px 0;
+  padding: 0;
+  list-style: none;
+}
+.toolchain-chips .chip {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 4px 10px;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+}
+.toolchain-chips .chip span { display: inline-block; }
+
+/* profile-quote 限定在 .profile-header 内，避免污染 .article-body 的普通文本 */
+.profile-header .profile-quote {
+  border-left: 3px solid var(--accent);
+  padding-left: 16px;
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--fg);
+  margin: 16px auto 0;
+  max-width: 540px;
+}
+@media (max-width: 600px) {
+  .profile-header .profile-quote {
+    font-size: 17px;
+    padding-left: 12px;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+/* ===========================================================================
+   [eng-review-amendment T4] Fenced code block 视觉容器
+   规范：spec.md "Fenced Code Block 视觉容器"
+   渲染 partial：layouts/_default/_markup/render-codeblock.html
+   关键：CSS 选择器走 .highlight-wrapper[data-lang]，因 Hugo Chroma 把 lang 放在
+   <code> 上，而 wrapper 是 partial 注入的；data-lang 仅显式声明语言时存在
+   =========================================================================== */
+.article-body .highlight-wrapper {
+  background: oklch(98% 0.005 240);
+  border: 1px solid oklch(90% 0.005 240);
+  border-radius: 8px;
+  padding: 32px 20px 16px 20px;  /* 顶部留 lang 标签空间 */
+  margin: 24px 0;
+  position: relative;
+  overflow: hidden;
+}
+.article-body .highlight-wrapper[data-lang]::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 8px;
+  left: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+/* 透明嵌套 .highlight 与 pre，让 oklch 容器背景生效；markup.toml noClasses=false 已确保 Chroma 不注入 inline style */
+.article-body .highlight-wrapper > .highlight {
+  background: transparent;
+  margin: 0;
+}
+.article-body .highlight-wrapper pre {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+.article-body .highlight-wrapper .codeblock-title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+/* [eng-review-amendment T4 暗色] 暗色翻转最小双色 token——避免暗色下浅底容器视觉割裂 */
+.dark .article-body .highlight-wrapper {
+  background: oklch(22% 0.012 240);
+  border-color: oklch(30% 0.012 240);
+}
+.dark .article-body .highlight-wrapper[data-lang]::before {
+  color: oklch(67% 0.17 248);
+}
+
+/* ===========================================================================
    [eng-review-followup C1] body 宽度统一
    覆盖 Blowfish baseof 的 .max-w-7xl + lg:px-32 (1280-256=1024 净宽)
    让全站 body 净宽达到 1100px 上限（与 --max-w 一致）

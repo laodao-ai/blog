@@ -1,0 +1,21 @@
+{{- /*
+  render-codeblock.html · 覆写 Blowfish 默认 fenced code block 渲染
+  ---
+  与 Blowfish 原版差异：
+    - 仅当显式声明语言时（.Type 非空字符串）才在 .highlight-wrapper 注入 data-lang 属性
+    - CSS 选择器 .highlight-wrapper[data-lang]::before 据此注入顶部 lang 标签
+    - 裸 ``` fenced code 保留容器样式但不显示 lang 标签（避免无意义的 "TEXT"）
+  规范：spec.md "Fenced Code Block 视觉容器"
+
+  [eng-review-amendment H1] 删除 (ne .Type nil)：Hugo render-codeblock 上下文 .Type
+  是 string 类型，永远不会是 nil；原版 `or .Type "text"` 的字符串 fallback 已证明这点
+*/ -}}
+{{- $title := or .Attributes.title "" -}}
+{{- $lang := or .Type "text" -}}
+{{- $hasLang := ne .Type "" -}}
+<div class="highlight-wrapper"{{ if $hasLang }} data-lang="{{ $lang }}"{{ end }}>
+  {{- with $title -}}
+    <div class="codeblock-title">{{- $title -}}</div>
+  {{- end -}}
+  {{- transform.Highlight .Inner $lang .Options -}}
+</div>

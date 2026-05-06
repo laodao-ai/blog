@@ -1,8 +1,9 @@
 {{- /*
   home.html · v3 editorial 首页 profile 区
-  - 96×96 大头像 + name + tagline (mono accent) + bio + 社交链接
+  - 96×96 大头像 + name + tagline (mono accent) + 工具链 chip + bio + 金句
   - 自渲染最近 6 篇文章（不复用 Blowfish recent-articles，[brainstorm-amendment B4]）
-  规范：spec.md "首页 Profile 区"
+  - 移除首页 social-links（保留 author-footer 内的，避免双倍打扰）[eng-review-amendment T3.5]
+  规范：spec.md "首页 Profile 区"（含 [eng-review-amendment H2/M4]）
 */ -}}
 {{ define "main" }}
 {{- /* [eng-review-amendment H3] 双 <main> 反模式修复：baseof.html 已经提供 <main id="main-content">，这里改用 <div> 避免重复 landmark + 重复 id（Lighthouse landmark-no-duplicate-main / duplicate-id-active） */ -}}
@@ -18,8 +19,11 @@
     </div>
     <h1 class="profile-name">{{ $author.name }}</h1>
     {{- with $author.tagline -}}<div class="profile-tagline">{{ . }}</div>{{- end -}}
+    {{- /* [eng-review-amendment T3.3] 工具链 chip 组：tagline 之下、bio 之上 */ -}}
+    {{- partial "toolchain-chips.html" . -}}
     {{- with $author.bio -}}<div class="profile-bio">{{ . | markdownify }}</div>{{- end -}}
-    <div class="profile-social">{{- partial "social-links.html" . -}}</div>
+    {{- /* [eng-review-amendment H2+M4] bio_quote 独立金句段（用 <p>，不用 <blockquote>——金句是作者自己的话不是引用） */ -}}
+    {{- with $author.bio_quote -}}<p class="profile-quote">{{ . }}</p>{{- end -}}
   </section>
 
   <section class="profile-recent">
