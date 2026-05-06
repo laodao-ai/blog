@@ -214,11 +214,11 @@
   color: var(--fg);
   margin-bottom: 14px;
 }
+/* [followup-article #1] deck 宽度跟随 article-header 容器 (col-w 680)，不再限 620 */
 .article-deck {
   font-size: 18px;
   line-height: 1.6;
   color: var(--muted);
-  max-width: 620px;
   margin-bottom: 24px;
 }
 
@@ -251,6 +251,8 @@
   line-height: 1.5;
 }
 .byline-name { color: var(--fg); font-weight: 600; }
+.byline-meta { color: var(--muted); }
+.byline-sep { color: var(--border); }
 
 /* ---------- 5. Hero（可选首图） ---------- */
 .hero {
@@ -446,6 +448,48 @@
   color: var(--accent);
 }
 
+/* [followup-article #3] 表格样式 — Stratechery / 杂志风：
+   细线 + thead 顶底双线 + 行底细线 + 行内适度 padding + tabular-nums 等 */
+.article-body table {
+  width: 100%;
+  margin: 28px 0;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+}
+.article-body thead {
+  border-top: 2px solid var(--fg);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.article-body th {
+  padding: 10px 12px;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg);
+  vertical-align: bottom;
+}
+.article-body tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+.article-body tbody tr:last-child {
+  border-bottom: 1px solid var(--fg);
+}
+.article-body td {
+  padding: 10px 12px;
+  vertical-align: top;
+  color: var(--fg);
+}
+.article-body tbody tr:hover { background: color-mix(in oklch, var(--accent) 4%, transparent); }
+/* 表格内的代码 / pill 缩小一档配合行高 */
+.article-body td code,
+.article-body th code { font-size: 12px; }
+
 /* Inline code */
 .article-body code {
   font-family: var(--font-mono);
@@ -481,12 +525,13 @@
 .pill-default { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
 
 /* ---------- 7. Author footer（文末作者大卡片） ---------- */
+/* [followup-article #5] 去掉 border-bottom，与下方 .related 间靠 margin 自然分隔，
+   避免 border-bottom + .related-header::after 横线撞双线（同首页 #3 修法） */
 .author-footer {
   max-width: var(--col-w);
   margin: 56px auto 0;
   padding: 28px 0;
   border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
   display: flex;
   gap: 20px;
   align-items: flex-start;
@@ -669,20 +714,12 @@
   margin: 24px auto 0;
 }
 
-/* ---------- 9. Related posts 网格（铺满 max-w 宽容器） ---------- */
-/* [eng-review-followup C1 v2] .related 嵌在 .article-wrap (padding 24+24) 内，
-   靠负 margin + calc(100%+48) 突破父 padding 真正撑到 --max-w (1100) */
+/* ---------- 9. Related posts 网格（与正文同宽 col-w 680） ---------- */
+/* [followup-article #4] 用户要求 related 宽度跟正文（col-w）保持一致，
+   不再撑满 max-w（1100）；同时改回普通居中，不需要负 margin 突破 padding */
 .related {
-  max-width: var(--max-w);
-  width: calc(100% + 48px);
-  margin: 52px -24px 0;
-}
-@media (max-width: 600px) {
-  .related {
-    width: calc(100% + 32px);
-    margin-left: -16px;
-    margin-right: -16px;
-  }
+  max-width: var(--col-w);
+  margin: 52px auto 0;
 }
 .related-header {
   font-family: var(--font-mono);
