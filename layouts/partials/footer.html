@@ -1,0 +1,7 @@
+{{- /* v3 editorial 接入 — 用 site-footer 替代 Blowfish 默认 footer
+       Appearance switcher 在 masthead-icons 提供 */ -}}
+{{- partial "site-footer.html" . -}}
+{{- /* [followup #2] 公众号 QR modal — 全站可用 */ -}}
+{{- partial "wechat-modal.html" . -}}
+{{- /* [followup-article-bug] 长代码块折叠 + 展开按钮 */ -}}
+{{- partial "code-collapse.html" . -}}

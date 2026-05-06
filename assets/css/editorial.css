@@ -1,0 +1,1351 @@
+/* ===========================================================================
+   editorial.css · v3 Web 版式系统
+   ---
+   单一真相源：design-system/v3/DESIGN.md
+   覆盖 Blowfish 默认渲染，通过 layouts/partials/extend-head-uncached.html 注入
+   =========================================================================== */
+
+/* [followup-cross-page] 全站永远显示 vertical scrollbar — 避免短页（无滚动）
+   与长页（有滚动）之间 body / masthead 中心位置 4px 偏移。
+   scrollbar-gutter: stable 在 macOS overlay scrollbar 下不真预留 (overlay scrollbar
+   width 为 0)，必须用 overflow-y: scroll 强制 classic scrollbar 永远存在。 */
+html {
+  overflow-y: scroll;
+}
+
+/* ---------- 1. 设计 Token（color / font / spacing） ---------- */
+:root {
+  /* 色板 · Light（默认） */
+  --bg:      oklch(98% 0.005 250);
+  --surface: oklch(100% 0 0);
+  --fg:      oklch(22% 0.02 240);
+  --muted:   oklch(50% 0.018 240);
+  --border:  oklch(90% 0.008 240);
+  --accent:  oklch(55% 0.17 250);    /* 品牌蓝（亮底加深 AAA 对比） */
+
+  /* Pill 状态色 */
+  --pill-ok-bg:      oklch(96% 0.02 145);
+  --pill-ok-fg:      oklch(40% 0.14 145);
+  --pill-ok-border:  oklch(88% 0.06 145);
+  --pill-warn-bg:    oklch(97% 0.02 70);
+  --pill-warn-fg:    oklch(48% 0.16 60);
+  --pill-warn-border: oklch(88% 0.08 70);
+  --pill-danger-bg:  oklch(96% 0.02 20);
+  --pill-danger-fg:  oklch(42% 0.18 20);
+  --pill-danger-border: oklch(88% 0.06 20);
+
+  /* 字体 */
+  --font-display: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI',
+                  'Noto Sans SC', system-ui, sans-serif;
+  --font-body:    -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI',
+                  'Noto Sans SC', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'IBM Plex Mono', ui-monospace,
+                  Menlo, monospace;
+
+  /* 间距 / 容器：分层宽度（编辑系站 two-tier 模式）
+     --max-w 用于 masthead / article-header / related-grid / profile / site-footer 等容器，铺开 1100px
+     --col-w 用于 .article-body 正文列，保持 680px ≈ 70 字符/行的阅读黄金区 */
+  --radius: 4px;
+  --max-w:  1100px;
+  --col-w:  680px;
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+  --space-2xl: 80px;
+}
+
+/* 暗色翻转（Blowfish 用 .dark 类切换；本次基础翻转，精修留 follow-up） */
+.dark {
+  --bg:      oklch(15% 0.01 240);
+  --surface: oklch(20% 0.012 240);
+  --fg:      oklch(92% 0.005 240);
+  --muted:   oklch(60% 0.015 240);
+  --border:  oklch(28% 0.012 240);
+  --accent:  oklch(67% 0.17 248);
+}
+
+/* ---------- 2. Masthead（顶部 sticky 导航） ---------- */
+.editorial-masthead {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: color-mix(in oklch, var(--surface) 90%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.editorial-masthead-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.masthead-logo {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.masthead-logo .prompt {
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+.masthead-logo .prompt::after {
+  content: '_';
+  display: inline-block;
+  animation: masthead-blink 1s step-end infinite;
+}
+.masthead-logo .brand {
+  font-family: var(--font-display);
+}
+@keyframes masthead-blink {
+  50% { opacity: 0; }
+}
+
+.masthead-nav {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  justify-content: center;
+}
+.masthead-nav a {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: color 0.15s;
+}
+.masthead-nav a:hover,
+.masthead-nav a[aria-current="page"],
+.masthead-nav .menu-active a {
+  color: var(--accent);
+}
+
+.masthead-icons {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.masthead-icons a {
+  color: var(--muted);
+  display: inline-flex;
+  transition: color 0.15s;
+}
+.masthead-icons a:hover { color: var(--accent); }
+.masthead-icons svg { width: 18px; height: 18px; }
+/* search button (id=search-button 触发 Blowfish modal) — 与 link 同样视觉表现 */
+.masthead-icons button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+.masthead-icons button:hover { color: var(--accent); }
+
+/* 亮暗切换按钮：复用 Blowfish appearance.js（监听 #appearance-switcher） */
+#appearance-switcher {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+#appearance-switcher:hover { color: var(--accent); }
+#appearance-switcher svg { width: 16px; height: 16px; }
+#appearance-switcher .icon-sun { display: none; }
+.dark #appearance-switcher .icon-moon { display: none; }
+.dark #appearance-switcher .icon-sun { display: inline-block; }
+
+@media (max-width: 600px) {
+  .masthead-nav { display: none; }
+  .editorial-masthead-inner { padding: 0 16px; }
+}
+
+/* ---------- 3. Article wrapper ---------- */
+.article-wrap {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* ---------- 4. Article header（eyebrow / title / deck / byline） ---------- */
+.article-header {
+  max-width: var(--col-w);
+  margin: 0 auto 32px;
+  padding: 24px 0 28px;
+  border-bottom: 1px solid var(--border);
+}
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.eyebrow-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--surface);
+  background: var(--accent);
+  padding: 2px 7px;
+  border-radius: 2px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.eyebrow-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.eyebrow-sep { color: var(--border); margin: 0 4px; }
+
+.article-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  color: var(--fg);
+  margin-bottom: 14px;
+}
+/* [followup-article #1] deck 宽度跟随 article-header 容器 (col-w 680)，不再限 620 */
+.article-deck {
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.byline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.byline-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.byline-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.byline-info {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.byline-name { color: var(--fg); font-weight: 600; }
+.byline-meta { color: var(--muted); }
+.byline-sep { color: var(--border); }
+
+/* ---------- 5. Hero（可选首图） ---------- */
+.hero {
+  width: 100%;
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.hero img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.hero-caption {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 36px;
+  letter-spacing: 0.02em;
+}
+.hero-caption::before { content: '▲ '; }
+
+/* ---------- 6. Article body 排版 ---------- */
+.article-body {
+  max-width: var(--col-w);
+  margin-left: auto;
+  margin-right: auto;
+  counter-reset: section;            /* H2 编号容器 */
+}
+.article-body p {
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--fg);
+  margin-bottom: 20px;
+}
+
+/* H2 自动编号（直接子选择器隔离 shortcode 内嵌 H2） */
+.article-body > h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--fg);
+  margin: 44px 0 14px;
+  padding-top: 8px;
+  border-top: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.article-body > h2::before {
+  counter-increment: section;
+  content: counter(section, decimal-leading-zero);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--accent);
+  padding: 1px 5px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.article-body > h2.no-num::before {
+  content: none;
+  border: none;
+  padding: 0;
+}
+
+/* H3 / H4 */
+.article-body h3 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  margin: 32px 0 12px;
+  color: var(--fg);
+}
+.article-body h4 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  margin: 24px 0 10px;
+  color: var(--fg);
+}
+
+/* Pull quote shortcode */
+.pull-quote {
+  margin: 36px 0;
+  padding: 20px 24px;
+  border-left: 3px solid var(--accent);
+  background: color-mix(in oklch, var(--accent) 8%, transparent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.pull-quote p {
+  font-size: 19px !important;
+  font-weight: 600;
+  line-height: 1.5 !important;
+  color: var(--fg) !important;
+  margin-bottom: 8px !important;
+  letter-spacing: -0.01em;
+}
+.pull-quote cite {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  font-style: normal;
+  letter-spacing: 0.03em;
+}
+
+/* Figure shortcode */
+.editorial-figure {
+  margin: 36px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.editorial-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.editorial-figure figcaption {
+  padding: 10px 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  line-height: 1.5;
+}
+
+/* Blockquote */
+.article-body blockquote {
+  margin: 28px 0;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  border-left-width: 1px;
+}
+.article-body blockquote p {
+  font-size: 15px !important;
+  color: var(--muted) !important;
+  margin-bottom: 0 !important;
+  font-style: italic;
+}
+.article-body blockquote footer {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+/* Lists */
+.article-body ol,
+.article-body ul {
+  margin: 20px 0 24px 0;
+  padding-left: 0;
+  list-style: none;
+  counter-reset: list-counter;
+}
+.article-body ol li,
+.article-body ul li {
+  position: relative;
+  padding: 10px 14px 10px 44px;
+  font-size: 16px;
+  line-height: 1.65;
+  border-bottom: 1px solid var(--border);
+}
+.article-body ol li:first-child,
+.article-body ul li:first-child { border-top: 1px solid var(--border); }
+.article-body ol li::before {
+  counter-increment: list-counter;
+  content: counter(list-counter, decimal-leading-zero);
+  position: absolute;
+  left: 12px;
+  top: 11px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.article-body ul li::before {
+  content: '─';
+  position: absolute;
+  left: 14px;
+  top: 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+}
+
+/* [followup-article #3] 表格样式 — Stratechery / 杂志风：
+   细线 + thead 顶底双线 + 行底细线 + 行内适度 padding + tabular-nums 等 */
+.article-body table {
+  width: 100%;
+  margin: 28px 0;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+}
+.article-body thead {
+  border-top: 2px solid var(--fg);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.article-body th {
+  padding: 10px 12px;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg);
+  vertical-align: bottom;
+}
+.article-body tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+.article-body tbody tr:last-child {
+  border-bottom: 1px solid var(--fg);
+}
+.article-body td {
+  padding: 10px 12px;
+  vertical-align: top;
+  color: var(--fg);
+}
+.article-body tbody tr:hover { background: color-mix(in oklch, var(--accent) 4%, transparent); }
+/* 表格内的代码 / pill 缩小一档配合行高 */
+.article-body td code,
+.article-body th code { font-size: 12px; }
+
+/* Inline code */
+.article-body code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: color-mix(in oklch, var(--fg) 6%, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: color-mix(in oklch, var(--fg) 80%, var(--accent));
+}
+.article-body pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* Pill shortcode */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 2px;
+  vertical-align: middle;
+}
+.pill-ok     { background: var(--pill-ok-bg);     color: var(--pill-ok-fg);     border: 1px solid var(--pill-ok-border); }
+.pill-warn   { background: var(--pill-warn-bg);   color: var(--pill-warn-fg);   border: 1px solid var(--pill-warn-border); }
+.pill-danger { background: var(--pill-danger-bg); color: var(--pill-danger-fg); border: 1px solid var(--pill-danger-border); }
+.pill-default { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+
+/* ---------- 7. Author footer（文末作者大卡片） ---------- */
+/* [followup-article #5] 去掉 border-bottom，与下方 .related 间靠 margin 自然分隔，
+   避免 border-bottom + .related-header::after 横线撞双线（同首页 #3 修法） */
+.author-footer {
+  max-width: var(--col-w);
+  margin: 56px auto 0;
+  padding: 28px 0;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.author-avatar-lg {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.author-avatar-lg img { width: 100%; height: 100%; object-fit: cover; }
+.author-info h3 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--fg);
+}
+.author-role {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  margin-bottom: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.author-info p,
+.author-bio p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.65;
+  max-width: 540px;
+  margin-bottom: 10px;
+}
+.author-bio p:last-child { margin-bottom: 12px; }
+
+/* [followup-article] author-footer 内 social-links 与 bio 之间留出呼吸 — 原贴在一起 */
+.author-footer .social-links {
+  margin-top: 18px;
+}
+
+/* ---------- 8. Social links（SVG 图标，无方框） ---------- */
+/* [followup #1 v2] 加大 icon → 26px；gap 16px；hover 上浮 1px */
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+.social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s, transform 0.15s;
+}
+.social-icon svg { width: 26px; height: 26px; }
+.social-icon:hover {
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+/* 知乎方框 + "知"字 — text 节点用 currentColor，hover 跟整体颜色一起变 */
+.social-icon.zhihu-icon svg text { fill: currentColor; }
+
+/* [followup #1] 自定义 tooltip — data-tooltip 触发，避免 native title 的延迟与丑样式 */
+.social-icon[data-tooltip] { position: relative; }
+.social-icon[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: var(--fg);
+  color: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  padding: 5px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+  z-index: 50;
+}
+.social-icon[data-tooltip]::before {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  border: 4px solid transparent;
+  border-top-color: var(--fg);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.social-icon[data-tooltip]:hover::after,
+.social-icon[data-tooltip]:hover::before,
+.social-icon[data-tooltip]:focus-visible::after,
+.social-icon[data-tooltip]:focus-visible::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ---------- 8.5. 微信公众号 QR Modal（HTML5 dialog） ---------- */
+.wechat-qr-modal {
+  /* native <dialog> 默认居中靠 inset: 0 + margin: auto，被某些 CSS reset 覆盖时需显式设置 */
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--fg);
+  padding: 28px 32px 24px;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  height: max-content;
+  max-height: calc(100vh - 32px);
+  text-align: center;
+  box-shadow: 0 24px 64px -16px oklch(0% 0 0 / 0.25);
+}
+.wechat-qr-modal::backdrop {
+  background: oklch(0% 0 0 / 0.5);
+  backdrop-filter: blur(4px);
+}
+.wechat-qr-modal[open] {
+  /* dialog 默认会出现在 viewport 中央 */
+  animation: wechat-qr-fade 0.2s ease-out;
+}
+@keyframes wechat-qr-fade {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+.wechat-qr-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: none;
+  border: 0;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.15s;
+}
+.wechat-qr-close:hover { color: var(--accent); }
+.wechat-qr-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+  margin-bottom: 16px;
+}
+.wechat-qr-img {
+  width: 240px;
+  height: 240px;
+  display: block;
+  margin: 0 auto;
+  border-radius: 6px;
+}
+.wechat-qr-hint {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  margin-top: 12px;
+}
+/* 首页 profile 区水平居中 */
+.profile-social { display: flex; justify-content: center; margin-top: 8px; }
+.profile-social .social-links { justify-content: center; }
+
+/* [followup-fix #4] 首页 profile-header 直出 social-links（partial 输出 <div class="social-links">） */
+.profile-header > .social-links {
+  justify-content: center;
+  margin: 24px auto 0;
+}
+
+/* ---------- 9. Related posts 网格（与正文同宽 col-w 680） ---------- */
+/* [followup-article #4] 用户要求 related 宽度跟正文（col-w）保持一致，
+   不再撑满 max-w（1100）；同时改回普通居中，不需要负 margin 突破 padding */
+.related {
+  max-width: var(--col-w);
+  margin: 52px auto 0;
+}
+.related-header {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.related-header::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.related-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface);
+  transition: border-color 0.15s;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.related-card:hover { border-color: var(--accent); }
+.related-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  background: color-mix(in oklch, var(--accent) 4%, var(--surface));
+}
+.related-body { padding: 14px; }
+.related-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--accent);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.related-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--fg);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.related-excerpt {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+.related-date {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  /* [eng-review-amendment A11y] 原 var(--muted)=oklch(50%) 与白底对比度 ~3.9，未达 4.5 阈值；改 oklch(45%) 后约 4.6:1 */
+  color: oklch(45% 0.01 240);
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 600px) {
+  .related-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- 10. Site footer ---------- */
+.editorial-site-footer {
+  max-width: var(--max-w);
+  margin: 48px auto 0;
+  border-top: 1px solid var(--border);
+  padding: 24px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.editorial-site-footer a { color: var(--accent); text-decoration: none; }
+.editorial-beian {
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+.editorial-beian a { color: var(--muted); text-decoration: none; }
+.editorial-beian a:hover { color: var(--accent); }
+
+/* ---------- 11. Pagination（prev/next，v3 token 重写） ---------- */
+.editorial-pagination {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.editorial-pagination-link {
+  display: block;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--fg);
+  transition: border-color 0.15s;
+}
+.editorial-pagination-link:hover { border-color: var(--accent); }
+.editorial-pagination-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.editorial-pagination-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.editorial-pagination .next {
+  text-align: right;
+  grid-column: 2;
+}
+@media (max-width: 600px) {
+  .editorial-pagination { grid-template-columns: 1fr; }
+  .editorial-pagination .next { grid-column: 1; text-align: left; }
+}
+
+/* ---------- 12. Profile homepage ---------- */
+/* [followup #3] 去掉 profile-header border-bottom — 与下方 .profile-recent-header::after
+   横向延伸线视觉上撞双线；保留后者（有意识的 section 标记，杂志感） */
+.profile-header {
+  max-width: var(--col-w);
+  margin: 0 auto 48px;
+  text-align: center;
+  padding: 32px 0 40px;
+}
+.profile-recent {
+  max-width: var(--col-w);
+  margin: 48px auto 0;
+}
+.editorial-pagination {
+  max-width: var(--col-w);
+  margin: 48px auto 0;
+}
+.profile-avatar {
+  width: 96px; height: 96px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-name {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  margin-bottom: 8px;
+}
+.profile-tagline {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.profile-bio {
+  max-width: 540px;
+  margin: 0 auto 24px;
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--muted);
+  text-align: left;
+}
+.profile-bio p { margin-bottom: 12px; }
+.profile-bio p:last-child { margin-bottom: 0; }
+.profile-social {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.profile-recent {
+  margin-top: 48px;
+}
+.profile-recent-header {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.profile-recent-header::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.profile-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.profile-recent-item {
+  display: block;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+}
+.profile-recent-item:last-child { border-bottom: none; }
+.profile-recent-item:hover .profile-recent-title { color: var(--accent); }
+.profile-recent-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  letter-spacing: 0.03em;
+}
+.profile-recent-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--fg);
+  margin-bottom: 6px;
+  letter-spacing: -0.015em;
+  transition: color 0.15s;
+}
+.profile-recent-summary {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ---------- 13. List / Taxonomy 页 ---------- */
+/* [followup-cross-page] 列表页用 article-wrap (1100) + col-w (680) 框架，
+   .list-body 内部继续 col-w 限宽 */
+.list-body {
+  max-width: var(--col-w);
+  margin: 0 auto;
+}
+/* taxonomy 网格 — categories / tags / series 总览页 */
+.taxonomy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.taxonomy-grid .taxonomy-item { margin: 0; }
+.taxonomy-link {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-decoration: none;
+  color: var(--fg);
+  transition: border-color 0.15s, color 0.15s;
+}
+.taxonomy-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.taxonomy-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+}
+.taxonomy-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===========================================================================
+   [eng-review-amendment T3] 首页 profile 区追加：工具链 chip + 金句 pullquote
+   规范：spec.md "首页工具链 Chip 组" + "首页 Profile 区"（MODIFIED）
+   =========================================================================== */
+.toolchain-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin: 16px 0;
+  padding: 0;
+  list-style: none;
+}
+.toolchain-chips .chip {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 4px 10px;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+}
+.toolchain-chips .chip span { display: inline-block; }
+
+/* profile-quote 限定在 .profile-header 内，避免污染 .article-body 的普通文本 */
+.profile-header .profile-quote {
+  border-left: 3px solid var(--accent);
+  padding-left: 16px;
+  margin: 16px auto 0;
+  max-width: 540px;
+  text-align: left;
+}
+.profile-header .profile-quote p {
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--fg);
+  margin: 0 0 8px 0;
+}
+.profile-header .profile-quote p:last-child { margin-bottom: 0; }
+@media (max-width: 600px) {
+  .profile-header .profile-quote {
+    padding-left: 12px;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .profile-header .profile-quote p { font-size: 17px; }
+}
+
+/* ===========================================================================
+   [eng-review-amendment T4] Fenced code block 视觉容器
+   规范：spec.md "Fenced Code Block 视觉容器"
+   渲染 partial：layouts/_default/_markup/render-codeblock.html
+   关键：CSS 选择器走 .highlight-wrapper[data-lang]，因 Hugo Chroma 把 lang 放在
+   <code> 上，而 wrapper 是 partial 注入的；data-lang 仅显式声明语言时存在
+   =========================================================================== */
+/* [followup-article-bug] 长行代码原被 wrapper overflow:hidden 直接切掉，
+   用户既看不到也滚不到（pre overflow visible 不生效因 wrapper 内 padding 把 pre 限死）。
+   正确做法：wrapper 横向 padding 归零（保留顶 padding 给 lang 标签），
+   把横向 padding 下沉到内层 pre 让其 overflow-x: auto 出滚动条。 */
+.article-body .highlight-wrapper {
+  background: oklch(98% 0.005 240);
+  border: 1px solid oklch(90% 0.005 240);
+  border-radius: 8px;
+  padding: 32px 0 0 0;  /* 仅留顶部空间给 lang 标签；左右 padding 下沉到 pre */
+  margin: 24px 0;
+  position: relative;
+  overflow: hidden;     /* 维持 border-radius 剪切；pre 的横滚条在 wrapper 内部不会被切 */
+}
+.article-body .highlight-wrapper[data-lang]::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 8px;
+  left: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+/* 透明嵌套 .highlight 与 pre，让 oklch 容器背景生效；markup.toml noClasses=false 已确保 Chroma 不注入 inline style */
+.article-body .highlight-wrapper > .highlight {
+  background: transparent;
+  margin: 0;
+  /* 滚动条统一挂在 .highlight（外层），pre 走 overflow: visible 让内容自然外溢，
+     这样 collapse 模式下 max-height 截 .highlight 时，scrollbar 在 .highlight
+     底部边缘（折叠可视区内），而不是 pre 底部（被 clip 出可视区） */
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 4px 20px 16px 20px;
+}
+.article-body .highlight-wrapper pre {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  overflow: visible;       /* 父 .highlight 接管 scroll */
+}
+/* 没有 .highlight wrapper 时（直接 .highlight-wrapper > pre），pre 自己 scroll + padding */
+.article-body .highlight-wrapper > pre {
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 4px 20px 16px 20px;
+}
+
+/* [followup-article-bug v2] 强制可见 scrollbar — macOS Chrome 默认 overlay scrollbar
+   仅在 hover/scroll 时显现，用户不知有横滚。三招组合永远显示：
+   ① scrollbar-gutter: stable 让 scrollbar 永远占位（即使 thumb 隐藏空间也在）
+   ② -webkit-appearance: none 关掉 macOS overlay，强制 classic 渲染
+   ③ thumb 默认 muted（hover fg），track transparent — 浅灰底上可见 */
+/* 隐藏 OS scrollbar — 完全用 .code-hscroll 自渲染替代 */
+.article-body .highlight-wrapper > .highlight,
+.article-body .highlight-wrapper > pre,
+.article-body .highlight-wrapper pre {
+  scrollbar-width: none;            /* Firefox */
+}
+.article-body .highlight-wrapper > .highlight::-webkit-scrollbar,
+.article-body .highlight-wrapper > pre::-webkit-scrollbar,
+.article-body .highlight-wrapper pre::-webkit-scrollbar {
+  display: none;                    /* Chrome / Safari */
+}
+
+/* [followup-article-bug v3] 自渲染 horizontal scrollbar — 兜底 Chrome macOS overlay scrollbar
+   默认隐藏问题（实测 scrollbarH=0 即不占布局）。永远可见，不依赖 OS。
+   渲染入口：layouts/partials/code-collapse.html JS renderCustomScrollbar() */
+.article-body .highlight-wrapper.has-h-overflow {
+  /* 给 wrapper 留出底部空间放 custom scrollbar */
+  padding-bottom: 14px;
+}
+.article-body .highlight-wrapper .code-hscroll {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 6px;
+  height: 6px;
+  background: color-mix(in oklch, var(--fg) 8%, transparent);
+  border-radius: 3px;
+  cursor: pointer;
+  /* 默认 fade-out，hover wrapper 才显示（与 macOS 行为契合） */
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.article-body .highlight-wrapper:hover .code-hscroll,
+.article-body .highlight-wrapper .code-hscroll.is-dragging {
+  opacity: 1;
+}
+.article-body .highlight-wrapper .code-hscroll-thumb {
+  position: absolute;
+  top: 0; bottom: 0;
+  background: var(--muted);     /* 淡灰，不抢眼 */
+  border-radius: 3px;
+  min-width: 24px;
+  cursor: grab;
+  transition: background 0.15s;
+}
+.article-body .highlight-wrapper .code-hscroll-thumb:hover,
+.article-body .highlight-wrapper .code-hscroll-thumb:active {
+  background: var(--fg);        /* hover 加深，但不到 accent 蓝 */
+  cursor: grabbing;
+}
+/* 折叠态时 custom scrollbar 在 button 上方 — wrapper padding-bottom 0（被 button 占）；
+   重新定位 scrollbar 到 button 顶部 */
+.article-body .highlight-wrapper.is-collapsible .code-hscroll {
+  bottom: 46px;             /* 40 button + 6 buffer */
+}
+/* fade ::after 让出 scrollbar 空间 — 重写之前的 bottom 52px */
+.article-body .highlight-wrapper.is-collapsible:not(.is-expanded)::after {
+  bottom: 60px;             /* 40 button + 6 scrollbar + 14 buffer */
+}
+
+/* [followup-article-bug] 长代码块折叠 + 展开按钮（JS code-collapse.html 注入 .is-collapsible） */
+.article-body .highlight-wrapper.is-collapsible {
+  --code-collapsed-h: 320px;
+  padding-bottom: 0;  /* 折叠时底部 button 占空间，不需要 wrapper padding-bottom */
+}
+.article-body .highlight-wrapper.is-collapsible:not(.is-expanded) > .highlight,
+.article-body .highlight-wrapper.is-collapsible:not(.is-expanded) > pre {
+  max-height: var(--code-collapsed-h);
+  overflow-y: hidden;       /* 只截垂直，保留横滚条在折叠可视区底部仍然可见可用 */
+}
+/* 折叠态底部渐变 fade — 提示有更多内容；位置高于按钮且高于横滚条（避免遮挡 scrollbar） */
+.article-body .highlight-wrapper.is-collapsible:not(.is-expanded)::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 52px;          /* 40 button + 10 scrollbar 缓冲，让横滚条露在 fade 之下 */
+  height: 50px;
+  background: linear-gradient(to bottom, transparent 0%, oklch(98% 0.005 240) 90%);
+  pointer-events: none;
+}
+.dark .article-body .highlight-wrapper.is-collapsible:not(.is-expanded)::after {
+  background: linear-gradient(to bottom, transparent 0%, oklch(22% 0.012 240) 80%);
+}
+/* 折叠/展开按钮：sticky 底栏 */
+.article-body .highlight-wrapper .code-toggle-btn {
+  display: flex;
+  width: 100%;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  background: oklch(98% 0.005 240);
+  border: 0;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  transition: background 0.15s, color 0.15s;
+}
+.dark .article-body .highlight-wrapper .code-toggle-btn {
+  background: oklch(22% 0.012 240);
+  color: oklch(67% 0.17 248);
+}
+.article-body .highlight-wrapper .code-toggle-btn:hover {
+  background: color-mix(in oklch, var(--accent) 8%, oklch(98% 0.005 240));
+}
+.dark .article-body .highlight-wrapper .code-toggle-btn:hover {
+  background: color-mix(in oklch, oklch(67% 0.17 248) 14%, oklch(22% 0.012 240));
+}
+.article-body .highlight-wrapper .codeblock-title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+/* [eng-review-amendment T4 暗色] 暗色翻转最小双色 token——避免暗色下浅底容器视觉割裂 */
+.dark .article-body .highlight-wrapper {
+  background: oklch(22% 0.012 240);
+  border-color: oklch(30% 0.012 240);
+}
+.dark .article-body .highlight-wrapper[data-lang]::before {
+  color: oklch(67% 0.17 248);
+}
+
+/* ===========================================================================
+   [eng-review-followup C1 修订 v2] 宽度统一：直接覆盖 Blowfish .max-w-7xl utility
+   ---
+   背景：DevTools 实测发现 Blowfish 把 sticky masthead 放进 `<div class="fixed
+   inset-x-0 z-100">` 内一层 `<div class="max-w-7xl ... lg:px-32">`；fixed 元素
+   脱离 body 容器块，body 自身的 max-width 覆盖触达不到它，masthead 仍被压成 1024。
+   而 body 自己也带 .max-w-7xl + lg:px-32 — 直接覆盖该 utility 一次性解决两处。
+   ---
+   padding 归零：body / Tailwind wrapper 均不再加横向 padding，由内层 editorial 容器
+   （.editorial-masthead-inner / .article-wrap）的 padding: 0 24px 自行处理；
+   避免 body 用 border-box 时 padding 蚕食 max-width 导致 .article-wrap 只到 1052。
+   =========================================================================== */
+.max-w-7xl {
+  max-width: 1100px !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+/* 内层 editorial 容器在窄屏补横向 padding，避免贴边 */
+@media (max-width: 600px) {
+  .editorial-masthead-inner,
+  .article-wrap,
+  .editorial-site-footer {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+/* 修复 site-footer 在 flex column 父元素下塌缩为 content-width — 显式 100% */
+.editorial-site-footer {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ===========================================================================
+   [eng-review-amendment A11y T2.2] RSS 链接可见性
+   index.xml 链接加下划线 + 偏移，对比度也借 currentColor 不依赖 var(--muted)
+   =========================================================================== */
+a[href$=".xml"] {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ===========================================================================
+   [eng-review-amendment H3] sr-only utility（如 Blowfish 已有则无害冗余）
+   用于 RSS 链接旁的辅助文本"RSS feed"，仅供 screen reader 读取
+   =========================================================================== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

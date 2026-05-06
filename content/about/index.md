@@ -2,6 +2,8 @@
 title: "关于老刀"
 date: 2026-04-29
 draft: false
+categories: ["关于"]
+tags: ["介绍", "老刀AI码场"]
 showAuthor: false
 showDate: false
 showReadingTime: false

@@ -1,0 +1,14 @@
+{{- /*
+  site-footer.html · v3 editorial 站点页脚
+  - 版权 + 订阅入口（RSS）
+  - cn 站追加 ICP 备案（复用 beian-footer.html）
+  规范：design-system/v3/DESIGN.md §八
+*/ -}}
+<footer class="editorial-site-footer">
+  <div>
+    © {{ now.Year }} {{ site.Title }} · AI 全栈实践 · Spec 驱动开发 ·
+    <a href="{{ "/index.xml" | relURL }}">RSS<span class="sr-only"> feed</span></a>{{- /* [eng-review-amendment A11y T2.2] 下划线由 editorial.css 的 a[href$=".xml"] 选择器提供 */ -}}
+    {{- with site.Params.author.social.wechat_mp }} · <a href="#wechat-mp-modal" data-modal-trigger="wechat-mp">公众号「{{ . }}」</a>{{- end }}
+  </div>
+  {{- partial "beian-footer.html" . -}}
+</footer>

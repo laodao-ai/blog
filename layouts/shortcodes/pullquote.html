@@ -1,0 +1,8 @@
+{{- /*
+  pullquote shortcode · v3 金句段（与普通 blockquote 区分）
+  用法：{{< pullquote cite="老刀 Cheney" >}}金句内容{{< /pullquote >}}
+*/ -}}
+<aside class="pull-quote" data-od-id="pull-quote">
+  <p>{{ .Inner | markdownify }}</p>
+  {{- with .Get "cite" -}}<cite>— {{ . }}</cite>{{- end -}}
+</aside>

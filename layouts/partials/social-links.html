@@ -1,0 +1,57 @@
+{{- /*
+  social-links.html · 站点分流的社交按钮组（SVG icons）
+  - production-cn / 本地默认  → 公众号 / B站 / 知乎 / 视频号 / GitHub
+  - production-com           → X / YouTube / GitHub
+  本地切换 com 组：hugo server --environment production-com
+  规范：spec.md "站点分流" / design-system v3 §1.3
+*/ -}}
+{{- $env := site.Params.env | default "" -}}
+{{- $isCom := eq $env "production-com" -}}
+{{- $s := site.Params.author.social -}}
+<div class="social-links">
+  {{- if not $isCom -}}
+    {{/* cn 组（含本地默认） */}}
+    {{- with $s.wechat_mp -}}
+      {{- /* [followup #2] 公众号点击弹 QR modal — data-modal-trigger 由 wechat-modal partial 注入的脚本捕获 */ -}}
+      <a href="#wechat-mp-modal" class="social-icon" data-modal-trigger="wechat-mp" aria-label="微信公众号「{{ . }}」" data-tooltip="微信公众号「{{ . }}」">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8.69 5.84C5.06 5.84 2.13 8.27 2.13 11.27c0 1.74.99 3.27 2.49 4.27l-.62 1.86 2.16-1.08c.78.16 1.4.32 2.16.32.16 0 .31 0 .47-.02-.1-.36-.16-.74-.16-1.13 0-2.36 2.05-4.27 4.59-4.27.16 0 .31.02.47.03C13.13 8.42 11.16 5.84 8.69 5.84zM6.5 8.66c.51 0 .92.41.92.92s-.41.92-.92.92-.92-.41-.92-.92.41-.92.92-.92zm4.59 0c.51 0 .92.41.92.92s-.41.92-.92.92-.92-.41-.92-.92.41-.92.92-.92zM21.87 15.43c0-2.51-2.49-4.55-5.31-4.55-2.97 0-5.31 2.04-5.31 4.55 0 2.51 2.34 4.55 5.31 4.55.62 0 1.25-.16 1.87-.32l1.71.93-.47-1.55c1.25-.93 2.2-2.17 2.2-3.61zm-7.03-.78c-.34 0-.62-.28-.62-.62s.28-.62.62-.62.62.28.62.62-.28.62-.62.62zm3.43 0c-.34 0-.62-.28-.62-.62s.28-.62.62-.62.62.28.62.62-.28.62-.62.62z"/></svg>
+      </a>
+    {{- end -}}
+    {{- with $s.bilibili -}}
+      <a href="https://space.bilibili.com/{{ . }}" class="social-icon" aria-label="B站" data-tooltip="B站" rel="noopener" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.572-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.747.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.133.756 1.88.773h13.334c.747-.017 1.376-.275 1.886-.773.511-.498.774-1.13.787-1.893v-7.52c-.013-.764-.276-1.396-.787-1.894-.51-.497-1.139-.755-1.886-.773zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386z"/></svg>
+      </a>
+    {{- end -}}
+    {{- with $s.zhihu -}}
+      {{- /* [followup #1] 知乎图标改为方框 + "知"字（用户反馈 simpleicons 的"乙"字过于抽象） */ -}}
+      <a href="https://www.zhihu.com/people/{{ . }}" class="social-icon zhihu-icon" aria-label="知乎" data-tooltip="知乎" rel="noopener" target="_blank">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="1.5" y="1.5" width="21" height="21" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <text x="12" y="13" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,'PingFang SC','Noto Sans SC','Microsoft YaHei',system-ui,sans-serif" font-size="14" font-weight="700" fill="currentColor">知</text>
+        </svg>
+      </a>
+    {{- end -}}
+    {{- with $s.weixin_ch -}}
+      <a href="#wechat-ch-modal" class="social-icon" data-modal-trigger="wechat-ch" aria-label="微信视频号「{{ . }}」" data-tooltip="微信视频号「{{ . }}」">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+      </a>
+    {{- end -}}
+  {{- else -}}
+    {{/* com 组 */}}
+    {{- with $s.x -}}
+      <a href="https://x.com/{{ . }}" class="social-icon" aria-label="X (Twitter)" data-tooltip="X (Twitter)" rel="noopener" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+    {{- end -}}
+    {{- with $s.youtube -}}
+      <a href="https://youtube.com/{{ . }}" class="social-icon" aria-label="YouTube" data-tooltip="YouTube" rel="noopener" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+      </a>
+    {{- end -}}
+  {{- end -}}
+  {{- with $s.github -}}
+    <a href="https://github.com/{{ . }}" class="social-icon" aria-label="GitHub" data-tooltip="GitHub @{{ . }}" rel="noopener" target="_blank">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2.16c-3.2.69-3.87-1.36-3.87-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.69 1.24 3.34.95.11-.74.4-1.24.72-1.53-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18.91-.25 1.89-.38 2.86-.38.97 0 1.95.13 2.86.38 2.19-1.49 3.15-1.18 3.15-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.68.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+    </a>
+  {{- end -}}
+</div>

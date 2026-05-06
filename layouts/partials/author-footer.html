@@ -1,0 +1,22 @@
+{{- /*
+  author-footer.html · v3 editorial 文末作者卡片
+  - 56×56 大头像
+  - name + role + bio + 社交链接
+  规范：spec.md "Author Footer"
+*/ -}}
+{{- $author := site.Params.author -}}
+<footer class="author-footer" data-od-id="author-footer">
+  <div class="author-avatar-lg">
+    {{- with $author.avatar -}}
+      <img src="{{ . | relURL }}" alt="{{ $author.name }}">
+    {{- else -}}
+      {{ $author.initials | default "LC" }}
+    {{- end -}}
+  </div>
+  <div class="author-info">
+    <h3>{{ $author.name }}</h3>
+    {{- with $author.role -}}<div class="author-role">{{ . }}</div>{{- end -}}
+    {{- with $author.bio -}}<div class="author-bio">{{ . | markdownify }}</div>{{- end -}}
+    {{- partial "social-links.html" . -}}
+  </div>
+</footer>

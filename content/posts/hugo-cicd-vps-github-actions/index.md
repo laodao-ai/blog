@@ -4,7 +4,7 @@ date: 2026-05-01
 draft: false
 summary: "从零搭建 Hugo 博客的 CI/CD 流水线：push main 自动构建部署，原子回滚保护，附真实踩坑记录。每个步骤都经过实际验证，特别标注了容易翻车的细节。"
 tags: ["Hugo", "GitHub Actions", "VPS", "CI/CD", "运维"]
-categories: ["工程实践"]
+categories: ["项目实战"]
 ---
 
 > **适合人群**：已有 Hugo 博客 + 独立 VPS，想摆脱手动 `scp` 部署，实现 push 自动发布的开发者。  

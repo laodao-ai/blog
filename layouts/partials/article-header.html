@@ -1,0 +1,46 @@
+{{- /*
+  article-header.html · v3 editorial 文章头部
+  - eyebrow: 第一个 category pill + 日期 + 阅读时长 + 字数
+  - title: H1 display
+  - deck: .Summary 18px muted
+  - byline: 头像 + 姓名 + 日期（不显示 role，避免与 author-footer 重复）
+  规范：spec.md "Article Header" / "字段渲染分工"
+*/ -}}
+<header class="article-header" data-od-id="article-header">
+  <div class="eyebrow">
+    {{- with index .Params.categories 0 -}}
+      <a class="eyebrow-tag" href="{{ printf "/categories/%s/" . | relURL }}">{{ . }}</a>
+    {{- end -}}
+    <span class="eyebrow-meta">
+      {{ .Date.Format "2006-01-02" }}
+      <span class="eyebrow-sep">·</span>
+      阅读约 {{ .ReadingTime }} min
+      <span class="eyebrow-sep">·</span>
+      {{ lang.FormatNumberCustom 0 .WordCount "., " }} 字
+    </span>
+  </div>
+
+  <h1 class="article-title">{{ .Title }}</h1>
+
+  {{- with .Summary -}}
+    <p class="article-deck">{{ . | plainify }}</p>
+  {{- end -}}
+
+  <div class="byline">
+    {{- $author := site.Params.author -}}
+    <div class="byline-avatar">
+      {{- with $author.avatar -}}
+        <img src="{{ . | relURL }}" alt="{{ $author.name }}">
+      {{- else -}}
+        {{ $author.initials | default "LC" }}
+      {{- end -}}
+    </div>
+    <div class="byline-info">
+      <div class="byline-name">{{ $author.name }}</div>
+      <div class="byline-meta">
+        {{- with $author.tagline -}}<span>{{ . }}</span><span class="byline-sep"> · </span>{{- end -}}
+        <span>{{ .Date.Format "2006-01-02" }}</span>
+      </div>
+    </div>
+  </div>
+</header>

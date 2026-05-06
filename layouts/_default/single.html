@@ -1,0 +1,21 @@
+{{- /*
+  single.html · v3 editorial 文章页骨架
+  完全覆盖 Blowfish single.html，启用 editorial 版式
+  结构：article-header → hero(可选) → article-body → pagination → author-footer → related-posts
+  规范：spec.md / design-system v3 §三
+*/ -}}
+{{ define "main" }}
+{{- /* [eng-review-amendment H3] 双 <main> 反模式修复：baseof.html 已经提供 <main id="main-content">，这里改用 <div> 避免重复 landmark + 重复 id（Lighthouse landmark-no-duplicate-main / duplicate-id-active） */ -}}
+<div class="article-wrap">
+  {{- partial "article-header.html" . -}}
+  {{- partial "hero.html" . -}}
+
+  <article class="article-body" data-od-id="body">
+    {{ .Content }}
+  </article>
+
+  {{- partial "article-pagination.html" . -}}
+  {{- partial "author-footer.html" . -}}
+  {{- partial "related-posts.html" . -}}
+</div>
+{{ end }}

@@ -1,0 +1,31 @@
+{{- /*
+  related-posts.html · v3 editorial 相关文章网格
+  取相同 tag/series/category 的最近 3 篇；不足时降级渲染实际数量
+  规范：spec.md "Related Posts"
+*/ -}}
+{{- $related := site.RegularPages.Related . | first 3 -}}
+{{- if $related -}}
+<section class="related" data-od-id="related">
+  <div class="related-header">相关文章</div>
+  <div class="related-grid">
+    {{- range $related -}}
+      <a class="related-card" href="{{ .RelPermalink }}">
+        <div class="related-thumb">
+          {{- with .Params.hero_image -}}
+            {{- $img := $.Resources.GetMatch . -}}
+            {{- if $img -}}<img src="{{ $img.RelPermalink }}" alt="" style="width:100%;height:100%;object-fit:cover;">{{- else -}}[ {{ $.Title }} ]{{- end -}}
+          {{- else -}}
+            [ {{ .Title }} ]
+          {{- end -}}
+        </div>
+        <div class="related-body">
+          {{- with index .Params.categories 0 -}}<div class="related-tag">{{ . }}</div>{{- end -}}
+          <div class="related-title">{{ .Title }}</div>
+          {{- with .Summary -}}<div class="related-excerpt">{{ . | plainify | truncate 80 }}</div>{{- end -}}
+          <div class="related-date">{{ .Date.Format "2006-01-02" }}</div>
+        </div>
+      </a>
+    {{- end -}}
+  </div>
+</section>
+{{- end -}}

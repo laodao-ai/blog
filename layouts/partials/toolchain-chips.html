@@ -1,0 +1,12 @@
+{{- /*
+  toolchain-chips.html · 工具链 chip 组
+  ---
+  显示 4 个 mono accent 边小标签：Claude Code / OpenSpec / Superpowers / GStack
+  作为首页 profile 的品牌视觉信号，取代埋在 bio 文本里的工具链一行字。
+  规范：spec.md "首页工具链 Chip 组"（[eng-review-amendment]）
+*/ -}}
+<ul class="toolchain-chips" aria-label="日常工具链">
+  {{ range slice "Claude Code" "OpenSpec" "Superpowers" "GStack" }}
+    <li class="chip"><span>{{ . }}</span></li>
+  {{ end }}
+</ul>

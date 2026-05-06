@@ -1,0 +1,97 @@
+{{- /*
+  code-collapse.html · 长代码块折叠 + 展开按钮
+  ---
+  阈值：高度 > 360px（约 18 行）的 fenced code 自动折叠到 320px；
+  折叠态底部有渐变 fade + sticky 按钮 "展开 (N 行)"；
+  点击切换 .is-expanded class，按钮文字变 "折叠"。
+  纯运行时 JS 处理，避免 Hugo 模板里逐 block 加 id；服务端也无需改 render-codeblock。
+*/ -}}
+<script>
+(function() {
+  var THRESHOLD = 360;
+
+  // 自渲染 horizontal scrollbar — 兜底 Chrome macOS overlay scrollbar 默认隐藏问题
+  function renderCustomScrollbar(wrapper, inner) {
+    if (inner.scrollWidth <= inner.clientWidth) return;
+    var bar = document.createElement('div');
+    bar.className = 'code-hscroll';
+    var thumb = document.createElement('div');
+    thumb.className = 'code-hscroll-thumb';
+    bar.appendChild(thumb);
+    wrapper.appendChild(bar);
+    wrapper.classList.add('has-h-overflow');
+
+    function update() {
+      var ratio = inner.clientWidth / inner.scrollWidth;
+      var maxScroll = inner.scrollWidth - inner.clientWidth;
+      var leftRatio = maxScroll > 0 ? inner.scrollLeft / inner.scrollWidth : 0;
+      thumb.style.width = (ratio * 100) + '%';
+      thumb.style.left = (leftRatio * 100) + '%';
+    }
+    inner.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+
+    // thumb 拖拽支持
+    var dragging = false, startX = 0, startScrollLeft = 0;
+    thumb.addEventListener('mousedown', function(e) {
+      dragging = true; startX = e.clientX; startScrollLeft = inner.scrollLeft;
+      document.body.style.userSelect = 'none';
+      bar.classList.add('is-dragging');     // 拖拽时即使鼠标离开 wrapper 也保持可见
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (!dragging) return;
+      var dx = e.clientX - startX;
+      var ratio = inner.scrollWidth / bar.clientWidth;
+      inner.scrollLeft = startScrollLeft + dx * ratio;
+    });
+    document.addEventListener('mouseup', function() {
+      if (dragging) { dragging = false; document.body.style.userSelect = ''; bar.classList.remove('is-dragging'); }
+    });
+    // track 点击跳转
+    bar.addEventListener('click', function(e) {
+      if (e.target === thumb) return;
+      var rect = bar.getBoundingClientRect();
+      var ratio = (e.clientX - rect.left) / rect.width;
+      inner.scrollLeft = ratio * inner.scrollWidth - inner.clientWidth / 2;
+    });
+  }
+
+  function init() {
+    document.querySelectorAll('.article-body .highlight-wrapper').forEach(function(w) {
+      var inner = w.querySelector('.highlight') || w.querySelector('pre');
+      if (!inner) return;
+
+      // 自渲染 horizontal scrollbar（永远可见）
+      renderCustomScrollbar(w, inner);
+
+      // 折叠 / 展开按钮
+      var fullH = inner.scrollHeight;
+      if (fullH <= THRESHOLD) return;
+      var lineH = parseFloat(getComputedStyle(inner).lineHeight) || 20;
+      var lines = Math.round(fullH / lineH);
+      w.classList.add('is-collapsible');
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'code-toggle-btn';
+      var labelExpand = '展开（' + lines + ' 行）';
+      var labelCollapse = '折叠';
+      btn.textContent = labelExpand;
+      btn.setAttribute('aria-expanded', 'false');
+      btn.addEventListener('click', function() {
+        var expanded = w.classList.toggle('is-expanded');
+        btn.textContent = expanded ? labelCollapse : labelExpand;
+        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        if (!expanded) w.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      });
+      w.appendChild(btn);
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
