@@ -5,7 +5,8 @@
   规范：spec.md / design-system v3 §三
 */ -}}
 {{ define "main" }}
-<main class="article-wrap" id="main-content">
+{{- /* [eng-review-amendment H3] 双 <main> 反模式修复：baseof.html 已经提供 <main id="main-content">，这里改用 <div> 避免重复 landmark + 重复 id（Lighthouse landmark-no-duplicate-main / duplicate-id-active） */ -}}
+<div class="article-wrap">
   {{- partial "article-header.html" . -}}
   {{- partial "hero.html" . -}}
 
@@ -16,5 +17,5 @@
   {{- partial "article-pagination.html" . -}}
   {{- partial "author-footer.html" . -}}
   {{- partial "related-posts.html" . -}}
-</main>
+</div>
 {{ end }}

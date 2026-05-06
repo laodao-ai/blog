@@ -617,7 +617,8 @@
 .related-date {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--muted);
+  /* [eng-review-amendment A11y] 原 var(--muted)=oklch(50%) 与白底对比度 ~3.9，未达 4.5 阈值；改 oklch(45%) 后约 4.6:1 */
+  color: oklch(45% 0.01 240);
   font-variant-numeric: tabular-nums;
 }
 @media (max-width: 600px) {
@@ -807,4 +808,47 @@
   font-size: 14px;
   color: var(--muted);
   line-height: 1.6;
+}
+
+/* ===========================================================================
+   [eng-review-followup C1] body 宽度统一
+   覆盖 Blowfish baseof 的 .max-w-7xl + lg:px-32 (1280-256=1024 净宽)
+   让全站 body 净宽达到 1100px 上限（与 --max-w 一致）
+   editorial.css 在 compiled/main.css 之后载入；用 !important 覆盖 utility class specificity
+   =========================================================================== */
+body {
+  max-width: 1100px !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+}
+@media (max-width: 600px) {
+  body {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+/* ===========================================================================
+   [eng-review-amendment A11y T2.2] RSS 链接可见性
+   index.xml 链接加下划线 + 偏移，对比度也借 currentColor 不依赖 var(--muted)
+   =========================================================================== */
+a[href$=".xml"] {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ===========================================================================
+   [eng-review-amendment H3] sr-only utility（如 Blowfish 已有则无害冗余）
+   用于 RSS 链接旁的辅助文本"RSS feed"，仅供 screen reader 读取
+   =========================================================================== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
