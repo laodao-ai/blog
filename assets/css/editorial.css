@@ -1043,14 +1043,18 @@
    关键：CSS 选择器走 .highlight-wrapper[data-lang]，因 Hugo Chroma 把 lang 放在
    <code> 上，而 wrapper 是 partial 注入的；data-lang 仅显式声明语言时存在
    =========================================================================== */
+/* [followup-article-bug] 长行代码原被 wrapper overflow:hidden 直接切掉，
+   用户既看不到也滚不到（pre overflow visible 不生效因 wrapper 内 padding 把 pre 限死）。
+   正确做法：wrapper 横向 padding 归零（保留顶 padding 给 lang 标签），
+   把横向 padding 下沉到内层 pre 让其 overflow-x: auto 出滚动条。 */
 .article-body .highlight-wrapper {
   background: oklch(98% 0.005 240);
   border: 1px solid oklch(90% 0.005 240);
   border-radius: 8px;
-  padding: 32px 20px 16px 20px;  /* 顶部留 lang 标签空间 */
+  padding: 32px 0 0 0;  /* 仅留顶部空间给 lang 标签；左右 padding 下沉到 pre */
   margin: 24px 0;
   position: relative;
-  overflow: hidden;
+  overflow: hidden;     /* 维持 border-radius 剪切；pre 的横滚条在 wrapper 内部不会被切 */
 }
 .article-body .highlight-wrapper[data-lang]::before {
   content: attr(data-lang);
@@ -1067,11 +1071,101 @@
 .article-body .highlight-wrapper > .highlight {
   background: transparent;
   margin: 0;
+  /* 滚动条挂在 .highlight 上（Chroma 输出常见结构 .highlight > pre）；
+     padding 下沉到这里让长行有横滚而不被外层 wrapper 切掉 */
+  overflow-x: auto;
+  padding: 4px 20px 16px 20px;
 }
 .article-body .highlight-wrapper pre {
   background: transparent;
   margin: 0;
   padding: 0;
+  /* 兜底：极少数情况无 .highlight wrapper 时由 pre 自带滚动 */
+  overflow-x: auto;
+}
+/* 没有 .highlight wrapper 时（直接 .highlight-wrapper > pre），把 padding 给 pre */
+.article-body .highlight-wrapper > pre {
+  padding: 4px 20px 16px 20px;
+}
+
+/* [followup-article-bug] 强制可见 scrollbar — macOS / iOS overlay scrollbar 默认隐藏，
+   用户不知道代码可横滚。用 thin 系统薄滚动条 + 自定义颜色，桌面与触屏一致可见。 */
+.article-body .highlight-wrapper > .highlight,
+.article-body .highlight-wrapper > pre,
+.article-body .highlight-wrapper pre {
+  scrollbar-width: thin;                              /* Firefox / 现代浏览器 */
+  scrollbar-color: var(--muted) transparent;          /* thumb 用 muted 比 border 更深，浅灰底上可见 */
+}
+.article-body .highlight-wrapper > .highlight::-webkit-scrollbar,
+.article-body .highlight-wrapper > pre::-webkit-scrollbar,
+.article-body .highlight-wrapper pre::-webkit-scrollbar {
+  height: 6px;
+}
+.article-body .highlight-wrapper > .highlight::-webkit-scrollbar-track,
+.article-body .highlight-wrapper > pre::-webkit-scrollbar-track,
+.article-body .highlight-wrapper pre::-webkit-scrollbar-track {
+  background: transparent;
+}
+.article-body .highlight-wrapper > .highlight::-webkit-scrollbar-thumb,
+.article-body .highlight-wrapper > pre::-webkit-scrollbar-thumb,
+.article-body .highlight-wrapper pre::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 3px;
+}
+.article-body .highlight-wrapper > .highlight:hover::-webkit-scrollbar-thumb,
+.article-body .highlight-wrapper > pre:hover::-webkit-scrollbar-thumb,
+.article-body .highlight-wrapper pre:hover::-webkit-scrollbar-thumb {
+  background: var(--fg);
+}
+
+/* [followup-article-bug] 长代码块折叠 + 展开按钮（JS code-collapse.html 注入 .is-collapsible） */
+.article-body .highlight-wrapper.is-collapsible {
+  --code-collapsed-h: 320px;
+  padding-bottom: 0;  /* 折叠时底部 button 占空间，不需要 wrapper padding-bottom */
+}
+.article-body .highlight-wrapper.is-collapsible:not(.is-expanded) > .highlight,
+.article-body .highlight-wrapper.is-collapsible:not(.is-expanded) > pre {
+  max-height: var(--code-collapsed-h);
+}
+/* 折叠态底部渐变 fade — 提示有更多内容 */
+.article-body .highlight-wrapper.is-collapsible:not(.is-expanded)::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 40px;          /* 在按钮上方 */
+  height: 56px;
+  background: linear-gradient(to bottom, transparent 0%, oklch(98% 0.005 240) 80%);
+  pointer-events: none;
+}
+.dark .article-body .highlight-wrapper.is-collapsible:not(.is-expanded)::after {
+  background: linear-gradient(to bottom, transparent 0%, oklch(22% 0.012 240) 80%);
+}
+/* 折叠/展开按钮：sticky 底栏 */
+.article-body .highlight-wrapper .code-toggle-btn {
+  display: flex;
+  width: 100%;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  background: oklch(98% 0.005 240);
+  border: 0;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  transition: background 0.15s, color 0.15s;
+}
+.dark .article-body .highlight-wrapper .code-toggle-btn {
+  background: oklch(22% 0.012 240);
+  color: oklch(67% 0.17 248);
+}
+.article-body .highlight-wrapper .code-toggle-btn:hover {
+  background: color-mix(in oklch, var(--accent) 8%, oklch(98% 0.005 240));
+}
+.dark .article-body .highlight-wrapper .code-toggle-btn:hover {
+  background: color-mix(in oklch, oklch(67% 0.17 248) 14%, oklch(22% 0.012 240));
 }
 .article-body .highlight-wrapper .codeblock-title {
   font-family: var(--font-mono);

@@ -1,0 +1,46 @@
+{{- /*
+  code-collapse.html · 长代码块折叠 + 展开按钮
+  ---
+  阈值：高度 > 360px（约 18 行）的 fenced code 自动折叠到 320px；
+  折叠态底部有渐变 fade + sticky 按钮 "展开 (N 行)"；
+  点击切换 .is-expanded class，按钮文字变 "折叠"。
+  纯运行时 JS 处理，避免 Hugo 模板里逐 block 加 id；服务端也无需改 render-codeblock。
+*/ -}}
+<script>
+(function() {
+  var THRESHOLD = 360;
+  function init() {
+    document.querySelectorAll('.article-body .highlight-wrapper').forEach(function(w) {
+      var inner = w.querySelector('.highlight') || w.querySelector('pre');
+      if (!inner) return;
+      // 估算未折叠时的高度：用 scrollHeight（pre 内容真高，不受 max-height 影响）
+      var fullH = inner.scrollHeight;
+      if (fullH <= THRESHOLD) return;
+      // 估算行数：用 line-height 反推（pre 字号 13px line-height 约 1.55 = 20.15px）
+      var lineH = parseFloat(getComputedStyle(inner).lineHeight) || 20;
+      var lines = Math.round(fullH / lineH);
+      w.classList.add('is-collapsible');
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'code-toggle-btn';
+      var labelExpand = '展开（' + lines + ' 行）';
+      var labelCollapse = '折叠';
+      btn.textContent = labelExpand;
+      btn.setAttribute('aria-expanded', 'false');
+      btn.addEventListener('click', function() {
+        var expanded = w.classList.toggle('is-expanded');
+        btn.textContent = expanded ? labelCollapse : labelExpand;
+        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        // 折叠时滚回 wrapper 顶
+        if (!expanded) w.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      });
+      w.appendChild(btn);
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
