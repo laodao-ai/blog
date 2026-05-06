@@ -37,6 +37,7 @@
     thumb.addEventListener('mousedown', function(e) {
       dragging = true; startX = e.clientX; startScrollLeft = inner.scrollLeft;
       document.body.style.userSelect = 'none';
+      bar.classList.add('is-dragging');     // 拖拽时即使鼠标离开 wrapper 也保持可见
       e.preventDefault();
     });
     document.addEventListener('mousemove', function(e) {
@@ -46,7 +47,7 @@
       inner.scrollLeft = startScrollLeft + dx * ratio;
     });
     document.addEventListener('mouseup', function() {
-      if (dragging) { dragging = false; document.body.style.userSelect = ''; }
+      if (dragging) { dragging = false; document.body.style.userSelect = ''; bar.classList.remove('is-dragging'); }
     });
     // track 点击跳转
     bar.addEventListener('click', function(e) {

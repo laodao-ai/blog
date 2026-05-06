@@ -5,6 +5,14 @@
    覆盖 Blowfish 默认渲染，通过 layouts/partials/extend-head-uncached.html 注入
    =========================================================================== */
 
+/* [followup-cross-page] 全站永远显示 vertical scrollbar — 避免短页（无滚动）
+   与长页（有滚动）之间 body / masthead 中心位置 4px 偏移。
+   scrollbar-gutter: stable 在 macOS overlay scrollbar 下不真预留 (overlay scrollbar
+   width 为 0)，必须用 overflow-y: scroll 强制 classic scrollbar 永远存在。 */
+html {
+  overflow-y: scroll;
+}
+
 /* ---------- 1. 设计 Token（color / font / spacing） ---------- */
 :root {
   /* 色板 · Light（默认） */
@@ -140,6 +148,18 @@
 }
 .masthead-icons a:hover { color: var(--accent); }
 .masthead-icons svg { width: 18px; height: 18px; }
+/* search button (id=search-button 触发 Blowfish modal) — 与 link 同样视觉表现 */
+.masthead-icons button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+.masthead-icons button:hover { color: var(--accent); }
 
 /* 亮暗切换按钮：复用 Blowfish appearance.js（监听 #appearance-switcher） */
 #appearance-switcher {
@@ -992,6 +1012,52 @@
   line-height: 1.6;
 }
 
+/* ---------- 13. List / Taxonomy 页 ---------- */
+/* [followup-cross-page] 列表页用 article-wrap (1100) + col-w (680) 框架，
+   .list-body 内部继续 col-w 限宽 */
+.list-body {
+  max-width: var(--col-w);
+  margin: 0 auto;
+}
+/* taxonomy 网格 — categories / tags / series 总览页 */
+.taxonomy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.taxonomy-grid .taxonomy-item { margin: 0; }
+.taxonomy-link {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-decoration: none;
+  color: var(--fg);
+  transition: border-color 0.15s, color 0.15s;
+}
+.taxonomy-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.taxonomy-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+}
+.taxonomy-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ===========================================================================
    [eng-review-amendment T3] 首页 profile 区追加：工具链 chip + 金句 pullquote
    规范：spec.md "首页工具链 Chip 组" + "首页 Profile 区"（MODIFIED）
@@ -1101,36 +1167,16 @@
    ① scrollbar-gutter: stable 让 scrollbar 永远占位（即使 thumb 隐藏空间也在）
    ② -webkit-appearance: none 关掉 macOS overlay，强制 classic 渲染
    ③ thumb 默认 muted（hover fg），track transparent — 浅灰底上可见 */
+/* 隐藏 OS scrollbar — 完全用 .code-hscroll 自渲染替代 */
 .article-body .highlight-wrapper > .highlight,
 .article-body .highlight-wrapper > pre,
 .article-body .highlight-wrapper pre {
-  scrollbar-width: thin;
-  scrollbar-color: var(--fg) color-mix(in oklch, var(--fg) 8%, transparent);  /* track 浅灰，thumb 深灰 — 默认就强对比 */
-  scrollbar-gutter: stable;
+  scrollbar-width: none;            /* Firefox */
 }
 .article-body .highlight-wrapper > .highlight::-webkit-scrollbar,
 .article-body .highlight-wrapper > pre::-webkit-scrollbar,
 .article-body .highlight-wrapper pre::-webkit-scrollbar {
-  -webkit-appearance: none;       /* 关 macOS overlay，强制 classic */
-  height: 8px;
-  width: 8px;
-}
-.article-body .highlight-wrapper > .highlight::-webkit-scrollbar-track,
-.article-body .highlight-wrapper > pre::-webkit-scrollbar-track,
-.article-body .highlight-wrapper pre::-webkit-scrollbar-track {
-  background: color-mix(in oklch, var(--fg) 8%, transparent);
-  border-radius: 4px;
-}
-.article-body .highlight-wrapper > .highlight::-webkit-scrollbar-thumb,
-.article-body .highlight-wrapper > pre::-webkit-scrollbar-thumb,
-.article-body .highlight-wrapper pre::-webkit-scrollbar-thumb {
-  background: var(--fg);             /* 默认就用最深色，永远显眼 */
-  border-radius: 4px;
-}
-.article-body .highlight-wrapper > .highlight:hover::-webkit-scrollbar-thumb,
-.article-body .highlight-wrapper > pre:hover::-webkit-scrollbar-thumb,
-.article-body .highlight-wrapper pre:hover::-webkit-scrollbar-thumb {
-  background: var(--accent);
+  display: none;                    /* Chrome / Safari */
 }
 
 /* [followup-article-bug v3] 自渲染 horizontal scrollbar — 兜底 Chrome macOS overlay scrollbar
@@ -1149,19 +1195,26 @@
   background: color-mix(in oklch, var(--fg) 8%, transparent);
   border-radius: 3px;
   cursor: pointer;
+  /* 默认 fade-out，hover wrapper 才显示（与 macOS 行为契合） */
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.article-body .highlight-wrapper:hover .code-hscroll,
+.article-body .highlight-wrapper .code-hscroll.is-dragging {
+  opacity: 1;
 }
 .article-body .highlight-wrapper .code-hscroll-thumb {
   position: absolute;
   top: 0; bottom: 0;
-  background: var(--fg);
+  background: var(--muted);     /* 淡灰，不抢眼 */
   border-radius: 3px;
-  min-width: 24px;          /* 太短的 thumb 不便点击 */
+  min-width: 24px;
   cursor: grab;
   transition: background 0.15s;
 }
 .article-body .highlight-wrapper .code-hscroll-thumb:hover,
 .article-body .highlight-wrapper .code-hscroll-thumb:active {
-  background: var(--accent);
+  background: var(--fg);        /* hover 加深，但不到 accent 蓝 */
   cursor: grabbing;
 }
 /* 折叠态时 custom scrollbar 在 button 上方 — wrapper padding-bottom 0（被 button 占）；

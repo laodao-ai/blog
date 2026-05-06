@@ -26,9 +26,11 @@
     </nav>
 
     <div class="masthead-icons">
-      <a href="{{ "/search/" | relLangURL }}" aria-label="搜索" title="搜索">
+      {{- /* [followup-cross-page] 搜索按钮触发 Blowfish 自带 modal（partials/search.html
+         + assets/js/search.js 监听 #search-button），不走 /search/ 路由（避免 404） */ -}}
+      <button type="button" id="search-button" aria-label="搜索" title="搜索（Cmd/Ctrl + K）">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </a>
+      </button>
       {{- /* 复用 Blowfish appearance.js：只要 button 拥有 id="appearance-switcher" 就生效 */ -}}
       <button id="appearance-switcher" type="button" aria-label="切换亮暗模式" title="切换亮暗模式">
         <svg class="icon-moon" viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="M32 256c0-123.8 100.3-224 223.8-224c11.36 0 29.7 1.668 40.9 3.746c9.616 1.777 11.75 14.63 3.279 19.44C245 86.5 211.2 144.6 211.2 207.8c0 109.7 99.71 193 208.3 172.3c9.561-1.805 16.28 9.324 10.11 16.95C387.9 448.6 324.8 480 255.8 480C132.1 480 32 379.6 32 256z"/></svg>

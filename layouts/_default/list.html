@@ -1,0 +1,52 @@
+{{- /*
+  list.html · v3 editorial 列表页（categories / tags / series / posts）
+  ---
+  统一框架：article-wrap (1100) + article-header (col-w 680) + 网格列表
+  规范：spec.md "列表页 / Taxonomy 页"
+*/ -}}
+{{ define "main" }}
+<div class="article-wrap">
+  <header class="article-header">
+    <div class="eyebrow">
+      <span class="eyebrow-meta">{{ partial "breadcrumbs.html" . }}</span>
+    </div>
+    <h1 class="article-title">{{ .Title }}</h1>
+    {{- with .Description -}}
+      <p class="article-deck">{{ . }}</p>
+    {{- else -}}
+      {{- with .Summary -}}<p class="article-deck">{{ . | plainify }}</p>{{- end -}}
+    {{- end -}}
+  </header>
+
+  <section class="list-body">
+    {{- if eq .Kind "taxonomy" -}}
+      {{- /* taxonomy 页（/categories/, /tags/, /series/）— 列条目 + 计数 */ -}}
+      <ul class="taxonomy-grid">
+        {{- range .Pages.ByTitle -}}
+          <li class="taxonomy-item">
+            <a href="{{ .RelPermalink }}" class="taxonomy-link">
+              <span class="taxonomy-name">{{ .Title }}</span>
+              <span class="taxonomy-count">{{ len .Pages }}</span>
+            </a>
+          </li>
+        {{- end -}}
+      </ul>
+    {{- else -}}
+      {{- /* 普通 list (/posts/, /categories/某分类/) — 文章条目，复用 profile-recent 样式 */ -}}
+      <div class="profile-recent-list">
+        {{- range .Pages.ByDate.Reverse -}}
+          <a class="profile-recent-item" href="{{ .RelPermalink }}">
+            <div class="profile-recent-meta">
+              {{- with index .Params.categories 0 -}}{{ . }} · {{- end -}}
+              {{ .Date.Format "2006-01-02" }}
+              {{- if .ReadingTime }} · 阅读约 {{ .ReadingTime }} min{{- end -}}
+            </div>
+            <div class="profile-recent-title">{{ .Title }}</div>
+            {{- with .Summary -}}<div class="profile-recent-summary">{{ . | plainify | truncate 120 }}</div>{{- end -}}
+          </a>
+        {{- end -}}
+      </div>
+    {{- end -}}
+  </section>
+</div>
+{{ end }}
