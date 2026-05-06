@@ -16,3 +16,8 @@ Thumbs.db
 
 # Node
 node_modules/
+
+# Local env (Cloudflare API tokens 等敏感信息)
+.env
+.env.local
+*.env.local
