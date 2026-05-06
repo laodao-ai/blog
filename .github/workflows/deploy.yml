@@ -68,6 +68,25 @@ jobs:
         run: |
           curl -f --retry 3 --retry-delay 2 https://laodao-ai.com
 
+      - name: Purge Cloudflare cache
+        # rsync + health check 通过后清掉 CF edge 缓存，避免 max-age=14400 期间用户看到旧版。
+        # 需 GitHub Secrets: CF_API_TOKEN (Zone:Cache Purge), CF_ZONE_ID_COM (laodao-ai.com Zone ID)
+        # 任一 secret 缺失则跳过此步（不影响主部署）。仅使用 secrets.* 上下文，不消费用户输入，无注入风险。
+        if: ${{ env.CF_API_TOKEN != '' && env.CF_ZONE_ID != '' }}
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID_COM }}
+        run: |
+          response=$(curl -sS -X POST \
+            "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/purge_cache" \
+            -H "Authorization: Bearer $CF_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}')
+          echo "$response"
+          echo "$response" | grep -q '"success":true' \
+            || { echo "::error::Cloudflare purge failed"; exit 1; }
+          echo "✓ Cloudflare cache purged for laodao-ai.com"
+
   deploy-cn:
     name: Build and deploy · laodao-ai.cn
     needs: check-summary
