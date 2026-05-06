@@ -22,8 +22,10 @@
     {{- /* [eng-review-amendment T3.3] 工具链 chip 组：tagline 之下、bio 之上 */ -}}
     {{- partial "toolchain-chips.html" . -}}
     {{- with $author.bio -}}<div class="profile-bio">{{ . | markdownify }}</div>{{- end -}}
-    {{- /* [eng-review-amendment H2+M4] bio_quote 独立金句段（用 <p>，不用 <blockquote>——金句是作者自己的话不是引用） */ -}}
-    {{- with $author.bio_quote -}}<p class="profile-quote">{{ . }}</p>{{- end -}}
+    {{- /* [followup-fix #3] bio_quote 改用 markdownify 支持双换行拆段（破折号过长时分两段更顺眼） */ -}}
+    {{- with $author.bio_quote -}}<div class="profile-quote">{{ . | markdownify }}</div>{{- end -}}
+    {{- /* [followup-fix #4] 首页 social-links 在 pullquote 之下 — 首页本就没有 author-footer，T3.5 删过头 */ -}}
+    {{- partial "social-links.html" . -}}
   </section>
 
   <section class="profile-recent">

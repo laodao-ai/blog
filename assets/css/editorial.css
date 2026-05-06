@@ -141,6 +141,23 @@
 .masthead-icons a:hover { color: var(--accent); }
 .masthead-icons svg { width: 18px; height: 18px; }
 
+/* 亮暗切换按钮：复用 Blowfish appearance.js（监听 #appearance-switcher） */
+#appearance-switcher {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+#appearance-switcher:hover { color: var(--accent); }
+#appearance-switcher svg { width: 16px; height: 16px; }
+#appearance-switcher .icon-sun { display: none; }
+.dark #appearance-switcher .icon-moon { display: none; }
+.dark #appearance-switcher .icon-sun { display: inline-block; }
+
 @media (max-width: 600px) {
   .masthead-nav { display: none; }
   .editorial-masthead-inner { padding: 0 16px; }
@@ -540,6 +557,12 @@
 .profile-social { display: flex; justify-content: center; margin-top: 8px; }
 .profile-social .social-links { justify-content: center; }
 
+/* [followup-fix #4] 首页 profile-header 直出 social-links（partial 输出 <div class="social-links">） */
+.profile-header > .social-links {
+  justify-content: center;
+  margin: 24px auto 0;
+}
+
 /* ---------- 9. Related posts 网格（铺满 max-w 宽容器） ---------- */
 /* [eng-review-followup C1 v2] .related 嵌在 .article-wrap (padding 24+24) 内，
    靠负 margin + calc(100%+48) 突破父 padding 真正撑到 --max-w (1100) */
@@ -848,20 +871,25 @@
 .profile-header .profile-quote {
   border-left: 3px solid var(--accent);
   padding-left: 16px;
+  margin: 16px auto 0;
+  max-width: 540px;
+  text-align: left;
+}
+.profile-header .profile-quote p {
   font-style: italic;
   font-size: 19px;
   line-height: 1.6;
   color: var(--fg);
-  margin: 16px auto 0;
-  max-width: 540px;
+  margin: 0 0 8px 0;
 }
+.profile-header .profile-quote p:last-child { margin-bottom: 0; }
 @media (max-width: 600px) {
   .profile-header .profile-quote {
-    font-size: 17px;
     padding-left: 12px;
     margin-left: 0;
     margin-right: 0;
   }
+  .profile-header .profile-quote p { font-size: 17px; }
 }
 
 /* ===========================================================================
