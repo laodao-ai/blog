@@ -541,9 +541,19 @@
 .profile-social .social-links { justify-content: center; }
 
 /* ---------- 9. Related posts 网格（铺满 max-w 宽容器） ---------- */
+/* [eng-review-followup C1 v2] .related 嵌在 .article-wrap (padding 24+24) 内，
+   靠负 margin + calc(100%+48) 突破父 padding 真正撑到 --max-w (1100) */
 .related {
   max-width: var(--max-w);
-  margin: 52px auto 0;
+  width: calc(100% + 48px);
+  margin: 52px -24px 0;
+}
+@media (max-width: 600px) {
+  .related {
+    width: calc(100% + 32px);
+    margin-left: -16px;
+    margin-right: -16px;
+  }
 }
 .related-header {
   font-family: var(--font-mono);
@@ -908,21 +918,35 @@
 }
 
 /* ===========================================================================
-   [eng-review-followup C1] body 宽度统一
-   覆盖 Blowfish baseof 的 .max-w-7xl + lg:px-32 (1280-256=1024 净宽)
-   让全站 body 净宽达到 1100px 上限（与 --max-w 一致）
-   editorial.css 在 compiled/main.css 之后载入；用 !important 覆盖 utility class specificity
+   [eng-review-followup C1 修订 v2] 宽度统一：直接覆盖 Blowfish .max-w-7xl utility
+   ---
+   背景：DevTools 实测发现 Blowfish 把 sticky masthead 放进 `<div class="fixed
+   inset-x-0 z-100">` 内一层 `<div class="max-w-7xl ... lg:px-32">`；fixed 元素
+   脱离 body 容器块，body 自身的 max-width 覆盖触达不到它，masthead 仍被压成 1024。
+   而 body 自己也带 .max-w-7xl + lg:px-32 — 直接覆盖该 utility 一次性解决两处。
+   ---
+   padding 归零：body / Tailwind wrapper 均不再加横向 padding，由内层 editorial 容器
+   （.editorial-masthead-inner / .article-wrap）的 padding: 0 24px 自行处理；
+   避免 body 用 border-box 时 padding 蚕食 max-width 导致 .article-wrap 只到 1052。
    =========================================================================== */
-body {
+.max-w-7xl {
   max-width: 1100px !important;
-  padding-left: 24px !important;
-  padding-right: 24px !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
+/* 内层 editorial 容器在窄屏补横向 padding，避免贴边 */
 @media (max-width: 600px) {
-  body {
+  .editorial-masthead-inner,
+  .article-wrap,
+  .editorial-site-footer {
     padding-left: 16px !important;
     padding-right: 16px !important;
   }
+}
+/* 修复 site-footer 在 flex column 父元素下塌缩为 content-width — 显式 100% */
+.editorial-site-footer {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* ===========================================================================
