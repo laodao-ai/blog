@@ -1096,34 +1096,82 @@
   padding: 4px 20px 16px 20px;
 }
 
-/* [followup-article-bug] 强制可见 scrollbar — macOS / iOS overlay scrollbar 默认隐藏，
-   用户不知道代码可横滚。用 thin 系统薄滚动条 + 自定义颜色，桌面与触屏一致可见。 */
+/* [followup-article-bug v2] 强制可见 scrollbar — macOS Chrome 默认 overlay scrollbar
+   仅在 hover/scroll 时显现，用户不知有横滚。三招组合永远显示：
+   ① scrollbar-gutter: stable 让 scrollbar 永远占位（即使 thumb 隐藏空间也在）
+   ② -webkit-appearance: none 关掉 macOS overlay，强制 classic 渲染
+   ③ thumb 默认 muted（hover fg），track transparent — 浅灰底上可见 */
 .article-body .highlight-wrapper > .highlight,
 .article-body .highlight-wrapper > pre,
 .article-body .highlight-wrapper pre {
-  scrollbar-width: thin;                              /* Firefox / 现代浏览器 */
-  scrollbar-color: var(--muted) transparent;          /* thumb 用 muted 比 border 更深，浅灰底上可见 */
+  scrollbar-width: thin;
+  scrollbar-color: var(--fg) color-mix(in oklch, var(--fg) 8%, transparent);  /* track 浅灰，thumb 深灰 — 默认就强对比 */
+  scrollbar-gutter: stable;
 }
 .article-body .highlight-wrapper > .highlight::-webkit-scrollbar,
 .article-body .highlight-wrapper > pre::-webkit-scrollbar,
 .article-body .highlight-wrapper pre::-webkit-scrollbar {
-  height: 6px;
+  -webkit-appearance: none;       /* 关 macOS overlay，强制 classic */
+  height: 8px;
+  width: 8px;
 }
 .article-body .highlight-wrapper > .highlight::-webkit-scrollbar-track,
 .article-body .highlight-wrapper > pre::-webkit-scrollbar-track,
 .article-body .highlight-wrapper pre::-webkit-scrollbar-track {
-  background: transparent;
+  background: color-mix(in oklch, var(--fg) 8%, transparent);
+  border-radius: 4px;
 }
 .article-body .highlight-wrapper > .highlight::-webkit-scrollbar-thumb,
 .article-body .highlight-wrapper > pre::-webkit-scrollbar-thumb,
 .article-body .highlight-wrapper pre::-webkit-scrollbar-thumb {
-  background: var(--muted);
-  border-radius: 3px;
+  background: var(--fg);             /* 默认就用最深色，永远显眼 */
+  border-radius: 4px;
 }
 .article-body .highlight-wrapper > .highlight:hover::-webkit-scrollbar-thumb,
 .article-body .highlight-wrapper > pre:hover::-webkit-scrollbar-thumb,
 .article-body .highlight-wrapper pre:hover::-webkit-scrollbar-thumb {
+  background: var(--accent);
+}
+
+/* [followup-article-bug v3] 自渲染 horizontal scrollbar — 兜底 Chrome macOS overlay scrollbar
+   默认隐藏问题（实测 scrollbarH=0 即不占布局）。永远可见，不依赖 OS。
+   渲染入口：layouts/partials/code-collapse.html JS renderCustomScrollbar() */
+.article-body .highlight-wrapper.has-h-overflow {
+  /* 给 wrapper 留出底部空间放 custom scrollbar */
+  padding-bottom: 14px;
+}
+.article-body .highlight-wrapper .code-hscroll {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 6px;
+  height: 6px;
+  background: color-mix(in oklch, var(--fg) 8%, transparent);
+  border-radius: 3px;
+  cursor: pointer;
+}
+.article-body .highlight-wrapper .code-hscroll-thumb {
+  position: absolute;
+  top: 0; bottom: 0;
   background: var(--fg);
+  border-radius: 3px;
+  min-width: 24px;          /* 太短的 thumb 不便点击 */
+  cursor: grab;
+  transition: background 0.15s;
+}
+.article-body .highlight-wrapper .code-hscroll-thumb:hover,
+.article-body .highlight-wrapper .code-hscroll-thumb:active {
+  background: var(--accent);
+  cursor: grabbing;
+}
+/* 折叠态时 custom scrollbar 在 button 上方 — wrapper padding-bottom 0（被 button 占）；
+   重新定位 scrollbar 到 button 顶部 */
+.article-body .highlight-wrapper.is-collapsible .code-hscroll {
+  bottom: 46px;             /* 40 button + 6 buffer */
+}
+/* fade ::after 让出 scrollbar 空间 — 重写之前的 bottom 52px */
+.article-body .highlight-wrapper.is-collapsible:not(.is-expanded)::after {
+  bottom: 60px;             /* 40 button + 6 scrollbar + 14 buffer */
 }
 
 /* [followup-article-bug] 长代码块折叠 + 展开按钮（JS code-collapse.html 注入 .is-collapsible） */

@@ -9,14 +9,65 @@
 <script>
 (function() {
   var THRESHOLD = 360;
+
+  // 自渲染 horizontal scrollbar — 兜底 Chrome macOS overlay scrollbar 默认隐藏问题
+  function renderCustomScrollbar(wrapper, inner) {
+    if (inner.scrollWidth <= inner.clientWidth) return;
+    var bar = document.createElement('div');
+    bar.className = 'code-hscroll';
+    var thumb = document.createElement('div');
+    thumb.className = 'code-hscroll-thumb';
+    bar.appendChild(thumb);
+    wrapper.appendChild(bar);
+    wrapper.classList.add('has-h-overflow');
+
+    function update() {
+      var ratio = inner.clientWidth / inner.scrollWidth;
+      var maxScroll = inner.scrollWidth - inner.clientWidth;
+      var leftRatio = maxScroll > 0 ? inner.scrollLeft / inner.scrollWidth : 0;
+      thumb.style.width = (ratio * 100) + '%';
+      thumb.style.left = (leftRatio * 100) + '%';
+    }
+    inner.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+
+    // thumb 拖拽支持
+    var dragging = false, startX = 0, startScrollLeft = 0;
+    thumb.addEventListener('mousedown', function(e) {
+      dragging = true; startX = e.clientX; startScrollLeft = inner.scrollLeft;
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (!dragging) return;
+      var dx = e.clientX - startX;
+      var ratio = inner.scrollWidth / bar.clientWidth;
+      inner.scrollLeft = startScrollLeft + dx * ratio;
+    });
+    document.addEventListener('mouseup', function() {
+      if (dragging) { dragging = false; document.body.style.userSelect = ''; }
+    });
+    // track 点击跳转
+    bar.addEventListener('click', function(e) {
+      if (e.target === thumb) return;
+      var rect = bar.getBoundingClientRect();
+      var ratio = (e.clientX - rect.left) / rect.width;
+      inner.scrollLeft = ratio * inner.scrollWidth - inner.clientWidth / 2;
+    });
+  }
+
   function init() {
     document.querySelectorAll('.article-body .highlight-wrapper').forEach(function(w) {
       var inner = w.querySelector('.highlight') || w.querySelector('pre');
       if (!inner) return;
-      // 估算未折叠时的高度：用 scrollHeight（pre 内容真高，不受 max-height 影响）
+
+      // 自渲染 horizontal scrollbar（永远可见）
+      renderCustomScrollbar(w, inner);
+
+      // 折叠 / 展开按钮
       var fullH = inner.scrollHeight;
       if (fullH <= THRESHOLD) return;
-      // 估算行数：用 line-height 反推（pre 字号 13px line-height 约 1.55 = 20.15px）
       var lineH = parseFloat(getComputedStyle(inner).lineHeight) || 20;
       var lines = Math.round(fullH / lineH);
       w.classList.add('is-collapsible');
@@ -31,7 +82,6 @@
         var expanded = w.classList.toggle('is-expanded');
         btn.textContent = expanded ? labelCollapse : labelExpand;
         btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-        // 折叠时滚回 wrapper 顶
         if (!expanded) w.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       });
       w.appendChild(btn);
