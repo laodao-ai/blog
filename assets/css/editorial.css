@@ -574,6 +574,11 @@
 }
 .author-bio p:last-child { margin-bottom: 12px; }
 
+/* [followup-article] author-footer 内 social-links 与 bio 之间留出呼吸 — 原贴在一起 */
+.author-footer .social-links {
+  margin-top: 18px;
+}
+
 /* ---------- 8. Social links（SVG 图标，无方框） ---------- */
 /* [followup #1 v2] 加大 icon → 26px；gap 16px；hover 上浮 1px */
 .social-links {
@@ -1071,20 +1076,23 @@
 .article-body .highlight-wrapper > .highlight {
   background: transparent;
   margin: 0;
-  /* 滚动条挂在 .highlight 上（Chroma 输出常见结构 .highlight > pre）；
-     padding 下沉到这里让长行有横滚而不被外层 wrapper 切掉 */
+  /* 滚动条统一挂在 .highlight（外层），pre 走 overflow: visible 让内容自然外溢，
+     这样 collapse 模式下 max-height 截 .highlight 时，scrollbar 在 .highlight
+     底部边缘（折叠可视区内），而不是 pre 底部（被 clip 出可视区） */
   overflow-x: auto;
+  overflow-y: visible;
   padding: 4px 20px 16px 20px;
 }
 .article-body .highlight-wrapper pre {
   background: transparent;
   margin: 0;
   padding: 0;
-  /* 兜底：极少数情况无 .highlight wrapper 时由 pre 自带滚动 */
-  overflow-x: auto;
+  overflow: visible;       /* 父 .highlight 接管 scroll */
 }
-/* 没有 .highlight wrapper 时（直接 .highlight-wrapper > pre），把 padding 给 pre */
+/* 没有 .highlight wrapper 时（直接 .highlight-wrapper > pre），pre 自己 scroll + padding */
 .article-body .highlight-wrapper > pre {
+  overflow-x: auto;
+  overflow-y: visible;
   padding: 4px 20px 16px 20px;
 }
 
@@ -1126,15 +1134,16 @@
 .article-body .highlight-wrapper.is-collapsible:not(.is-expanded) > .highlight,
 .article-body .highlight-wrapper.is-collapsible:not(.is-expanded) > pre {
   max-height: var(--code-collapsed-h);
+  overflow-y: hidden;       /* 只截垂直，保留横滚条在折叠可视区底部仍然可见可用 */
 }
-/* 折叠态底部渐变 fade — 提示有更多内容 */
+/* 折叠态底部渐变 fade — 提示有更多内容；位置高于按钮且高于横滚条（避免遮挡 scrollbar） */
 .article-body .highlight-wrapper.is-collapsible:not(.is-expanded)::after {
   content: '';
   position: absolute;
   left: 0; right: 0;
-  bottom: 40px;          /* 在按钮上方 */
-  height: 56px;
-  background: linear-gradient(to bottom, transparent 0%, oklch(98% 0.005 240) 80%);
+  bottom: 52px;          /* 40 button + 10 scrollbar 缓冲，让横滚条露在 fade 之下 */
+  height: 50px;
+  background: linear-gradient(to bottom, transparent 0%, oklch(98% 0.005 240) 90%);
   pointer-events: none;
 }
 .dark .article-body .highlight-wrapper.is-collapsible:not(.is-expanded)::after {
