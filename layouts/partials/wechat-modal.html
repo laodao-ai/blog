@@ -1,26 +1,42 @@
 {{- /*
-  wechat-modal.html · 微信公众号 QR 二维码 dialog
-  - 通过 social-links.html 的 a[data-modal-trigger="wechat-mp"] 触发
-  - 用 HTML5 native <dialog>，无依赖、键盘 ESC 自带、focus trap 自带
-  规范：spec.md "首页社交媒体 — 公众号弹窗"
+  wechat-modal.html · 微信公众号 / 视频号 QR 二维码 dialog（双弹窗）
+  - 通过 a[data-modal-trigger="wechat-mp"] / a[data-modal-trigger="wechat-ch"] 触发
+  - 用 HTML5 native <dialog>，无依赖、ESC 关闭、focus trap 自带
+  规范：spec.md "首页社交媒体 — 公众号/视频号弹窗"
 */ -}}
-{{- $name := site.Params.author.social.wechat_mp | default "" -}}
-{{- if $name -}}
-<dialog id="wechat-modal" class="wechat-qr-modal" aria-labelledby="wechat-modal-title">
+{{- $mp := site.Params.author.social.wechat_mp | default "" -}}
+{{- $ch := site.Params.author.social.weixin_ch | default "" -}}
+{{- if or $mp $ch -}}
+{{- if $mp -}}
+<dialog id="wechat-mp-modal" class="wechat-qr-modal" aria-labelledby="wechat-mp-modal-title">
   <button class="wechat-qr-close" type="button" aria-label="关闭">×</button>
-  <div id="wechat-modal-title" class="wechat-qr-title">微信公众号「{{ $name }}」</div>
-  <img class="wechat-qr-img" src="{{ "/img/wechat-mp-qr.png" | relURL }}" alt="微信公众号 {{ $name }} 二维码" width="240" height="240" loading="lazy">
+  <div id="wechat-mp-modal-title" class="wechat-qr-title">微信公众号「{{ $mp }}」</div>
+  <img class="wechat-qr-img" src="{{ "/img/wechat-mp-qr.png" | relURL }}" alt="微信公众号 {{ $mp }} 二维码" width="240" height="240" loading="lazy">
   <div class="wechat-qr-hint">微信扫码关注</div>
 </dialog>
+{{- end -}}
+{{- if $ch -}}
+<dialog id="wechat-ch-modal" class="wechat-qr-modal" aria-labelledby="wechat-ch-modal-title">
+  <button class="wechat-qr-close" type="button" aria-label="关闭">×</button>
+  <div id="wechat-ch-modal-title" class="wechat-qr-title">微信视频号「{{ $ch }}」</div>
+  <img class="wechat-qr-img" src="{{ "/img/wechat-ch-qr.png" | relURL }}" alt="微信视频号 {{ $ch }} 二维码" width="240" height="240" loading="lazy">
+  <div class="wechat-qr-hint">微信扫码关注</div>
+</dialog>
+{{- end -}}
 <script>
 (function() {
-  var modal = document.getElementById('wechat-modal');
-  if (!modal || typeof modal.showModal !== 'function') return;
-  var trigger = document.querySelector('a[data-modal-trigger="wechat-mp"]');
-  if (trigger) trigger.addEventListener('click', function(e) { e.preventDefault(); modal.showModal(); });
-  var close = modal.querySelector('.wechat-qr-close');
-  if (close) close.addEventListener('click', function() { modal.close(); });
-  modal.addEventListener('click', function(e) { if (e.target === modal) modal.close(); });
+  function bind(triggerKey, modalId) {
+    var modal = document.getElementById(modalId);
+    if (!modal || typeof modal.showModal !== 'function') return;
+    document.querySelectorAll('a[data-modal-trigger="' + triggerKey + '"]').forEach(function(a) {
+      a.addEventListener('click', function(e) { e.preventDefault(); modal.showModal(); });
+    });
+    var close = modal.querySelector('.wechat-qr-close');
+    if (close) close.addEventListener('click', function() { modal.close(); });
+    modal.addEventListener('click', function(e) { if (e.target === modal) modal.close(); });
+  }
+  bind('wechat-mp', 'wechat-mp-modal');
+  bind('wechat-ch', 'wechat-ch-modal');
 })();
 </script>
 {{- end -}}

@@ -2,7 +2,7 @@
 # 4 categories（内容入口）+ 系列 + 关于 + 右侧搜索/GitHub 图标
 
 [[main]]
-  name = "SDD 工作流"
+  name = "SDD工作流"
   pageRef = "categories/sdd-工作流"
   title = "Spec-Driven Development 工作流"
   weight = 10
