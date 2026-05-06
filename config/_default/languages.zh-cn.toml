@@ -24,7 +24,8 @@ title = "老刀AI码场"
   #   - bio       = 前两段精华合并为一段（原段 1 + 段 2），首页 profile 主体段落
   #   - bio_quote = 第三段独立金句，首页 profile 用 <p class="profile-quote"> 渲染（pullquote 风格）
   #   工具链改由 partials/toolchain-chips.html 渲染为 4 个 chip，从 bio 文本中删去
-  bio       = "老刀 Cheney，AI 全栈工程实践者。研究并实践 Spec 驱动开发（SDD），把 AI 辅助开发做成可复制的工作流。后端为主，兼顾嵌入式、小程序、Web。"
+  # [followup #2] bio 开头不再重复 "老刀 Cheney"（紧跟 H1 重复），从角色起笔
+  bio       = "AI 全栈工程实践者。研究并实践 Spec 驱动开发（SDD），把 AI 辅助开发做成可复制的工作流。后端为主，兼顾嵌入式、小程序、Web。"
   # bio_quote 用 markdown 双换行 → home.html 走 markdownify 渲染为两段 <p>
   bio_quote = """
 这里只写自己跑通过的东西。

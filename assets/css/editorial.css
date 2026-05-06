@@ -529,29 +529,27 @@
 }
 .author-bio p:last-child { margin-bottom: 12px; }
 
-/* ---------- 8. Social links（SVG 图标按钮组） ---------- */
+/* ---------- 8. Social links（SVG 图标，无方框） ---------- */
+/* [followup #1] 去掉方框 + border + bg，让 brand logo 直出，仅靠 currentColor 统一灰；
+   单色 logo 在 22px 比方框内 16px 更易识别 */
 .social-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 14px;
+  align-items: center;
 }
 .social-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
   color: var(--muted);
   text-decoration: none;
-  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  transition: color 0.15s, transform 0.15s;
 }
-.social-icon svg { width: 16px; height: 16px; }
+.social-icon svg { width: 22px; height: 22px; }
 .social-icon:hover {
   color: var(--accent);
-  border-color: var(--accent);
-  background: color-mix(in oklch, var(--accent) 6%, transparent);
+  transform: translateY(-1px);
 }
 /* 首页 profile 区水平居中 */
 .profile-social { display: flex; justify-content: center; margin-top: 8px; }
@@ -726,12 +724,13 @@
 }
 
 /* ---------- 12. Profile homepage ---------- */
+/* [followup #3] 去掉 profile-header border-bottom — 与下方 .profile-recent-header::after
+   横向延伸线视觉上撞双线；保留后者（有意识的 section 标记，杂志感） */
 .profile-header {
   max-width: var(--col-w);
   margin: 0 auto 48px;
   text-align: center;
   padding: 32px 0 40px;
-  border-bottom: 1px solid var(--border);
 }
 .profile-recent {
   max-width: var(--col-w);
