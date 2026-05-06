@@ -530,12 +530,11 @@
 .author-bio p:last-child { margin-bottom: 12px; }
 
 /* ---------- 8. Social links（SVG 图标，无方框） ---------- */
-/* [followup #1] 去掉方框 + border + bg，让 brand logo 直出，仅靠 currentColor 统一灰；
-   单色 logo 在 22px 比方框内 16px 更易识别 */
+/* [followup #1 v2] 加大 icon → 26px；gap 16px；hover 上浮 1px */
 .social-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 16px;
   align-items: center;
 }
 .social-icon {
@@ -546,10 +545,78 @@
   text-decoration: none;
   transition: color 0.15s, transform 0.15s;
 }
-.social-icon svg { width: 22px; height: 22px; }
+.social-icon svg { width: 26px; height: 26px; }
 .social-icon:hover {
   color: var(--accent);
   transform: translateY(-1px);
+}
+/* 知乎方框 + "知"字 — text 节点用 currentColor，hover 跟整体颜色一起变 */
+.social-icon.zhihu-icon svg text { fill: currentColor; }
+
+/* ---------- 8.5. 微信公众号 QR Modal（HTML5 dialog） ---------- */
+.wechat-qr-modal {
+  /* native <dialog> 默认居中靠 inset: 0 + margin: auto，被某些 CSS reset 覆盖时需显式设置 */
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--fg);
+  padding: 28px 32px 24px;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  height: max-content;
+  max-height: calc(100vh - 32px);
+  text-align: center;
+  box-shadow: 0 24px 64px -16px oklch(0% 0 0 / 0.25);
+}
+.wechat-qr-modal::backdrop {
+  background: oklch(0% 0 0 / 0.5);
+  backdrop-filter: blur(4px);
+}
+.wechat-qr-modal[open] {
+  /* dialog 默认会出现在 viewport 中央 */
+  animation: wechat-qr-fade 0.2s ease-out;
+}
+@keyframes wechat-qr-fade {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+.wechat-qr-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: none;
+  border: 0;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.15s;
+}
+.wechat-qr-close:hover { color: var(--accent); }
+.wechat-qr-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+  margin-bottom: 16px;
+}
+.wechat-qr-img {
+  width: 240px;
+  height: 240px;
+  display: block;
+  margin: 0 auto;
+  border-radius: 6px;
+}
+.wechat-qr-hint {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  margin-top: 12px;
 }
 /* 首页 profile 区水平居中 */
 .profile-social { display: flex; justify-content: center; margin-top: 8px; }
