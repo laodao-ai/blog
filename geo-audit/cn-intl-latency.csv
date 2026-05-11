@@ -2,3 +2,6 @@ date,page,p95_ms,samples_n,runner_region
 2026-05-05,/,1582,5,California
 2026-05-05,/posts/,1035,5,California
 2026-05-05,/about/,1062,5,California
+2026-05-11,/,10001,5,Virginia
+2026-05-11,/posts/,7580,5,Virginia
+2026-05-11,/about/,6033,5,Virginia
