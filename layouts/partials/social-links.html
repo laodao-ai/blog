@@ -1,7 +1,7 @@
 {{- /*
   social-links.html · 站点分流的社交按钮组（SVG icons）
   - production-cn / 本地默认  → 公众号 / B站 / 知乎 / 视频号 / GitHub
-  - production-com           → X / YouTube / GitHub
+  - production-com           → 公众号 / B站 / 知乎 / 视频号 / X / YouTube / GitHub
   本地切换 com 组：hugo server --environment production-com
   规范：spec.md "站点分流" / design-system v3 §1.3
 */ -}}
@@ -9,8 +9,7 @@
 {{- $isCom := eq $env "production-com" -}}
 {{- $s := site.Params.author.social -}}
 <div class="social-links">
-  {{- if not $isCom -}}
-    {{/* cn 组（含本地默认） */}}
+    {{/* 国内平台：各环境均提供，方便 .com 作为统一博客入口。 */}}
     {{- with $s.wechat_mp -}}
       {{- /* [followup #2] 公众号点击弹 QR modal — data-modal-trigger 由 wechat-modal partial 注入的脚本捕获 */ -}}
       <a href="#wechat-mp-modal" class="social-icon" data-modal-trigger="wechat-mp" aria-label="微信公众号「{{ . }}」" data-tooltip="微信公众号「{{ . }}」">
@@ -36,7 +35,7 @@
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
       </a>
     {{- end -}}
-  {{- else -}}
+  {{- if $isCom -}}
     {{/* com 组 */}}
     {{- with $s.x -}}
       <a href="https://x.com/{{ . }}" class="social-icon" aria-label="X (Twitter)" data-tooltip="X (Twitter)" rel="noopener" target="_blank">

@@ -1,6 +1,6 @@
 {{- /*
   home.html · v3 editorial 首页 profile 区
-  - 96×96 大头像 + name + tagline (mono accent) + 工具链 chip + bio + 金句
+  - 96×96 大头像 + name + tagline (mono accent) + 内容方向 chip + bio + 金句
   - 自渲染最近 6 篇文章（不复用 Blowfish recent-articles，[brainstorm-amendment B4]）
   - 移除首页 social-links（保留 author-footer 内的，避免双倍打扰）[eng-review-amendment T3.5]
   规范：spec.md "首页 Profile 区"（含 [eng-review-amendment H2/M4]）
@@ -19,7 +19,7 @@
     </div>
     <h1 class="profile-name">{{ $author.name }}</h1>
     {{- with $author.tagline -}}<div class="profile-tagline">{{ . }}</div>{{- end -}}
-    {{- /* [eng-review-amendment T3.3] 工具链 chip 组：tagline 之下、bio 之上 */ -}}
+    {{- /* 内容方向 chip 组：tagline 之下、bio 之上 */ -}}
     {{- partial "toolchain-chips.html" . -}}
     {{- with $author.bio -}}<div class="profile-bio">{{ . | markdownify }}</div>{{- end -}}
     {{- /* [followup-fix #3] bio_quote 改用 markdownify 支持双换行拆段（破折号过长时分两段更顺眼） */ -}}

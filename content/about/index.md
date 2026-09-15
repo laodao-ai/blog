@@ -1,9 +1,9 @@
 ---
-title: "关于老刀"
+title: "关于老刀Cheney"
 date: 2026-04-29
 draft: false
 categories: ["关于"]
-tags: ["介绍", "老刀AI码场"]
+tags: ["介绍", "老刀AI工坊"]
 showAuthor: false
 showDate: false
 showReadingTime: false
@@ -15,25 +15,23 @@ showComments: false
 
 ## 我是谁
 
-我是**老刀**（laodao），Go 后端工程师，专注于 **Spec 驱动开发（SDD）** 在真实项目中的工程化实践。
+我是**老刀Cheney**，有二十多年软件开发经验，分享用 AI 做产品的工程实践。
 
-这里是**老刀AI码场（laodao-ai）**的官方博客，承载我用 [Claude Code](https://www.claude.com/claude-code) + [OpenSpec](https://github.com/Fission-AI/OpenSpec) + [Superpowers](https://github.com/obra/superpowers) + [GStack](https://github.com/garrytan/gstack) 这一整套工具链做真实项目时积累的笔记、教程与踩坑实录。
+做过前端、后端与嵌入式开发，关注从开发工作流、系统架构到测试和运行环境的完整工程过程。
 
 ## 这个博客在讲什么
 
-围绕"AI 驱动后端开发的融合工作流"做的系列内容。三条主线：
+这里是**老刀AI工坊**。记录从代码能跑到系统可靠运行之间的工程问题：AI 开发工作流、系统架构、开发测试环境、数据库环境等。
 
-- **层级视角**：写代码 → 规格驱动 → 路线图 → 高阶评审的四层级演进
-- **阶段视角**：需求细化 / 代码生成 / 代码审查与归档的三阶段协作
-- **场景化裁剪**：S/M/L 三档工作流操作手册——一次改动该走哪档
-
-每篇教程类文章会带配套 GitHub 仓库链接（譬如 [`laodao-ai/shorturl`](https://github.com/laodao-ai/shorturl)），文章和代码双向互链；每个变更走完都会归档进 OpenSpec spec 主线，可读可审计。
+用通俗语言和图解解释专业概念，结合实际运行结果讲清做法、取舍与边界。文章整理操作步骤、代码、验证结果与参考资料，方便查阅和复现。视频在 YouTube「老刀Cheney」和 B站「老刀AI工坊」。
 
 ## 怎么找到我
 
 - **GitHub**：[github.com/laodao-ai](https://github.com/laodao-ai)
-- **博客**：[laodao-ai.com](https://laodao-ai.com)（国际） / [laodao-ai.cn](https://laodao-ai.cn)（国内，备案中）
+- **YouTube**：[老刀Cheney](https://www.youtube.com/@laodaocheney)
+- **B站**：[老刀AI工坊](https://space.bilibili.com/668350177)
+- **博客**：[laodao-ai.com](https://laodao-ai.com)
 - **RSS**：[/index.xml](/index.xml)
 - **AI 友好端点**：[/llms.txt](/llms.txt) · [/llms-full.txt](/llms-full.txt)
 
-如果你也在用 SDD + AI 协作开发，欢迎通过 GitHub Issues 交流——比起被动读文章，我更想看到你把这些工作流跑在自己的项目里之后的经验反馈。
+如果你也在用 AI 做产品，欢迎在视频评论区交流，或在相关仓库的 GitHub Issues 中反馈复现问题。也欢迎分享你在项目中采用这些方法后的结果与取舍。

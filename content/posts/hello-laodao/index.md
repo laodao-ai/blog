@@ -1,30 +1,31 @@
 ---
-title: "Hello, 老刀AI码场"
+title: "Hello, 老刀AI工坊"
 slug: "hello-laodao"
 date: 2026-04-29
 draft: false
-summary: "这是老刀AI码场的第一篇博客文章，本文是阶段 1 的烟雾测试文，用来验证 Hugo + Blowfish 主题对代码块、Mermaid 流程图、表格和 TOC 的渲染能力，同时为系列后续内容做开篇预告。"
+summary: "这是老刀AI工坊的第一篇博客文章，本文是阶段 1 的烟雾测试文，用来验证 Hugo + Blowfish 主题对代码块、Mermaid 流程图、表格和 TOC 的渲染能力，同时介绍博客关注的 AI 开发工作流、系统架构、开发测试环境与数据库环境。"
 tags: ["系列开篇", "测试文"]
 categories: ["公告"]
 ---
 
-老刀AI码场的第一篇博客就这样上线了。这是一篇**阶段 1 的烟雾测试文**——它的主要目的不是讲清某个技术问题，而是把"博客基础设施"这条流水线跑通：archetype 写作模板、check-summary 摘要质量守门、JSON-LD 结构化数据注入、Hugo + Blowfish 渲染、scp 推送到 VPS——任何一环出问题都该在这一篇里暴露。等阶段 2 系列开篇文章上线后，本文将转为 archived 状态。
+老刀AI工坊的第一篇博客就这样上线了。这是一篇**阶段 1 的烟雾测试文**——它的主要目的不是讲清某个技术问题，而是把"博客基础设施"这条流水线跑通：archetype 写作模板、check-summary 摘要质量守门、JSON-LD 结构化数据注入、Hugo + Blowfish 渲染、scp 推送到 VPS——任何一环出问题都该在这一篇里暴露。本文保留为建站记录，名称与频道介绍已按当前定位更新。
 
 ## 这个博客在讲什么
 
-围绕 **AI 驱动后端开发的融合工作流** 做的系列内容。核心工具栈是 Claude Code + OpenSpec + Superpowers + GStack，场景以 Go 后端为主，辅以嵌入式变体。
+**把 AI 做进生产**：面向用 AI 做产品的开发者，讲清从代码能跑到系统可靠运行之间的工程问题。
 
-后续将按以下三条主线推进：
+内容主要覆盖以下方向，用实际运行结果解释做法、取舍与边界：
 
-| 主线 | 视角 | 起点文章 |
-|------|------|---------|
-| 层级视角 | 写代码 → 规格驱动 → 路线图 → 高阶评审 | ep01 系列开篇（W1） |
-| 阶段视角 | 需求细化 / 代码生成 / 代码审查与归档 | ep02 S/M/L 操作手册（W5） |
-| 工具对比 | 同类型 skill 怎么选、什么时候用哪个 | special-1 / 2 / 3（W2-W4） |
+| 方向 | 关注的问题 |
+|------|------------|
+| AI 开发工作流 | 从需求到实现、验证与交付，怎样协作 |
+| 系统架构 | 系统怎样分工，如何选择与取舍 |
+| 开发测试环境 | 怎样搭建可运行、可验证的开发与测试条件 |
+| 数据库环境 | 怎样准备、管理与验证产品所需的数据环境 |
 
 ## 从一个 hello 函数说起
 
-每条系列正式开始前，让我们先看一段 Go 代码——这也是老刀的语言主场：
+先用一段 Go 代码验证代码块的呈现：
 
 ```go
 package main
@@ -36,7 +37,7 @@ import "fmt"
 func Greet(name, lang string) string {
     switch lang {
     case "zh":
-        return fmt.Sprintf("你好，%s。这里是老刀AI码场。", name)
+        return fmt.Sprintf("你好，%s。这里是老刀AI工坊。", name)
     default:
         return fmt.Sprintf("Hello %s, welcome to laodao-ai.", name)
     }
@@ -50,7 +51,7 @@ func main() {
 输出：
 
 ```
-你好，读者。这里是老刀AI码场。
+你好，读者。这里是老刀AI工坊。
 ```
 
 ## 内容流水线
@@ -87,7 +88,6 @@ categories: ["分类"]
 
 ## 接下来
 
-下一篇是 **ep01 系列开篇**：《AI 驱动后端开发的四层级工作流：从写对代码到治理演进》——会把"四层级"这个心智模型讲清楚，并带 ai-shorurl 真实工程案例。如果你对这套工作流感兴趣，可以现在就把 RSS 订阅好（[/index.xml](/index.xml)）或者 follow [github.com/laodao-ai](https://github.com/laodao-ai) 获取系列更新。
+关于 AI 开发工作流，可以继续读[从失控到可控的五阶段 SDD 工作流](/posts/ep01-five-stage-workflow/)。更多工程实践可以通过 [RSS](/index.xml) 订阅，也可以在 [GitHub](https://github.com/laodao-ai) 找到相关仓库。
 
 也欢迎通过 GitHub Issues 提问、反驳、或分享你自己跑这套工作流的踩坑——比起写文章，**听到你怎么用** 更让我有动力继续写下去。
-

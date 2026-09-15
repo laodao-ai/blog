@@ -4,7 +4,7 @@
  *
  * 单源生成站点 favicon 全套资源。
  *
- * 源 SVG:   ../design-system/v2/logo/logo.svg
+ * 源 SVG:   static/img/avatar.svg（与账号品牌 logo 同源，不修改图形）
  * 输出:     blog/static/{favicon.ico, favicon-16x16.png, favicon-32x32.png, apple-touch-icon.png}
  * 工具链:   sharp（SVG→PNG）+ png-to-ico（多帧 ICO 合成）
  *
@@ -19,9 +19,7 @@
  * 用法:     cd blog && node scripts/generate-favicons.js
  *           或      cd blog && npm run favicons
  *
- * fallback (B 路径):
- *   若 16/32 直缩 logo.svg 在小尺寸辨识度判定不通过，
- *   将 SOURCE_SMALL 改为 design-system/v2/logo/simple-mark.svg 即可（仅影响 16/32/ICO）。
+ * 所有尺寸使用同一个品牌 logo，不依赖博客仓库之外的归档目录。
  */
 
 const fs = require('fs');
@@ -31,8 +29,8 @@ const pngToIco = require('png-to-ico');
 
 const ROOT = path.resolve(__dirname, '..');
 const STATIC_DIR = path.join(ROOT, 'static');
-const SOURCE_LARGE = path.resolve(ROOT, '../design-system/v2/logo/logo.svg');
-// 小尺寸源（A 方案与 SOURCE_LARGE 同源；B 方案改指 simple-mark.svg）
+const SOURCE_LARGE = path.join(STATIC_DIR, 'img/avatar.svg');
+// 大小尺寸共用现行品牌 logo。
 const SOURCE_SMALL = SOURCE_LARGE;
 
 async function renderPng(srcSvg, size, outFile) {

@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
 {{- end -}}
 
-{{- $author := .Site.Params.Author.name | default "老刀" -}}
+{{- $author := .Site.Params.Author.name | default "老刀Cheney" -}}
 
 {{- if eq .RelPermalink "/about/" -}}
   {{- $jsonld := dict
@@ -32,7 +32,6 @@
     "@type" "Person"
     "name" $author
     "url" .Permalink
-    "sameAs" (slice "https://github.com/laodao-ai")
   -}}
 <script type="application/ld+json">
 {{ $jsonld | jsonify (dict "indent" "  ") | safeJS }}
