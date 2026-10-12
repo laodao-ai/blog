@@ -717,7 +717,8 @@ html {
 }
 .wechat-qr-img {
   width: 240px;
-  height: 240px;
+  /* 高度按原图比例：视频号二维码图带账号名，不是正方形，固定 240px 会压扁 */
+  height: auto;
   display: block;
   margin: 0 auto;
   border-radius: 6px;
