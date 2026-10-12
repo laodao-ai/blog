@@ -7,7 +7,7 @@
   weight = 10
 
 [[main]]
-  name = "AI 开发工作流"
+  name = "AI开发工作流"
   pageRef = "categories/ai-开发工作流"
   weight = 20
 
