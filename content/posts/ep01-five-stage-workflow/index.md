@@ -2,7 +2,7 @@
 title: "AI 开发的代码，你敢上生产吗？—— 从失控到可控的五阶段 SDD 工作流"
 slug: "ep01-five-stage-workflow"
 date: 2026-05-06
-draft: false
+draft: true
 summary: "AI 写代码快，但失控也快。把一次完整开发迭代拆出五个失控点，对应五阶段闭环（规格探索→规格评审→可验证实现→代码评审→规格归档），配合 OpenSpec / Superpowers / GStack / Code-Review 四件套，把信息丢失的每一个节点堵上。"
 tags: ["Spec-Driven", "Claude Code", "OpenSpec", "Superpowers", "GStack", "Code-Review", "AI 工作流"]
 categories: ["sdd-工作流"]

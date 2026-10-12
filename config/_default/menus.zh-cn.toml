@@ -1,31 +1,15 @@
-# 主菜单 · v3 editorial 重组（[brainstorm-amendment B8/B10]）
-# 4 categories（内容入口）+ 系列 + 关于 + 右侧搜索/GitHub 图标
+# 主菜单 · 2026-10 按内容两层重组（channel/positioning.md「内容分两层」）
+# 文章总列表 + 核心层分类 + 关于；研究层「工具研究」发第一篇时再加，不挂空页
 
 [[main]]
-  name = "SDD工作流"
-  pageRef = "categories/sdd-工作流"
-  title = "Spec-Driven Development 工作流"
+  name = "文章"
+  pageRef = "posts"
   weight = 10
 
 [[main]]
-  name = "工具链"
-  pageRef = "categories/工具链"
+  name = "AI 开发工作流"
+  pageRef = "categories/ai-开发工作流"
   weight = 20
-
-[[main]]
-  name = "项目实战"
-  pageRef = "categories/项目实战"
-  weight = 30
-
-[[main]]
-  name = "嵌入式"
-  pageRef = "categories/嵌入式"
-  weight = 40
-
-[[main]]
-  name = "系列"
-  pageRef = "series"
-  weight = 50
 
 [[main]]
   name = "关于"
