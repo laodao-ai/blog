@@ -44,10 +44,11 @@ html {
 
   /* 间距 / 容器：分层宽度（编辑系站 two-tier 模式）
      --max-w 用于 masthead / article-header / related-grid / profile / site-footer 等容器，铺开 1100px
-     --col-w 用于 .article-body 正文列，保持 680px ≈ 70 字符/行的阅读黄金区 */
+     --col-w 用于 .article-body 正文列。原为 680px（≈ 70 英文字符/行）；2026-10-26 作者嫌宽屏下内容缩成一团，
+     放到 800px，中文 17px 约 47 字/行 */
   --radius: 4px;
   --max-w:  1100px;
-  --col-w:  680px;
+  --col-w:  800px;
   --space-xs: 8px;
   --space-sm: 16px;
   --space-md: 24px;
@@ -184,6 +185,9 @@ html {
 }
 
 /* ---------- 3. Article wrapper ---------- */
+/* 固定导航下的占位：导航 49px + 32px 留白，标题区再有 24px 内边距（2026-10-26 作者要求收紧，原 148px） */
+.editorial-header-spacer { min-height: 81px; }
+
 .article-wrap {
   max-width: var(--max-w);
   margin: 0 auto;
@@ -275,10 +279,11 @@ html {
 .byline-sep { color: var(--border); }
 
 /* ---------- 5. Hero（可选首图） ---------- */
+/* 2026-10-26 作者定：首图和正文同宽（col-w），原来撑满 article-wrap 比正文宽一截 */
 .hero {
-  width: 100%;
+  max-width: var(--col-w);
+  margin: 0 auto 32px;
   border-radius: var(--radius);
-  margin-bottom: 8px;
   overflow: hidden;
 }
 .hero img {
@@ -302,6 +307,14 @@ html {
   margin-right: auto;
   counter-reset: section;            /* H2 编号容器 */
 }
+/* 正文链接：品牌蓝 + 细下划线，悬停下划线加实（2026-10-26 作者指出链接看不出来） */
+.article-body a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklch, var(--accent) 40%, transparent);
+  text-underline-offset: 3px;
+}
+.article-body a:hover { text-decoration-color: var(--accent); }
 .article-body p {
   font-size: 17px;
   line-height: 1.75;
@@ -436,22 +449,20 @@ html {
   list-style: none;
   counter-reset: list-counter;
 }
+/* 2026-10-26 作者定：去掉每项上下的分隔线、收紧行距，列表读起来是一组，不是一格一格的表 */
 .article-body ol li,
 .article-body ul li {
   position: relative;
-  padding: 10px 14px 10px 44px;
+  padding: 4px 0 4px 32px;
   font-size: 16px;
   line-height: 1.65;
-  border-bottom: 1px solid var(--border);
 }
-.article-body ol li:first-child,
-.article-body ul li:first-child { border-top: 1px solid var(--border); }
 .article-body ol li::before {
   counter-increment: list-counter;
   content: counter(list-counter, decimal-leading-zero);
   position: absolute;
-  left: 12px;
-  top: 11px;
+  left: 2px;
+  top: 7px;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 600;
@@ -461,8 +472,8 @@ html {
 .article-body ul li::before {
   content: '─';
   position: absolute;
-  left: 14px;
-  top: 10px;
+  left: 4px;
+  top: 4px;
   font-family: var(--font-mono);
   font-size: 13px;
   color: var(--accent);
@@ -780,9 +791,14 @@ html {
   display: block;
 }
 .related-card:hover { border-color: var(--accent); }
+/* 2026-10-26 改 16:9（原 16:7）：缩略图用视频封面，16:7 会切掉上下；无图卡片同高，占位文字居中加内边距 */
 .related-thumb {
   width: 100%;
-  aspect-ratio: 16 / 7;
+  aspect-ratio: 16 / 9;
+  box-sizing: border-box;
+  padding: 0 12px;
+  text-align: center;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -791,6 +807,8 @@ html {
   color: var(--muted);
   background: color-mix(in oklch, var(--accent) 4%, var(--surface));
 }
+.related-thumb.has-img { padding: 0; }
+.related-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .related-body { padding: 14px; }
 .related-tag {
   font-family: var(--font-mono);
@@ -1011,6 +1029,25 @@ html {
   font-size: 14px;
   color: var(--muted);
   line-height: 1.6;
+}
+/* 有首图的条目：文字在左，16:9 缩略图在右（2026-10-26 作者要求列表加缩略图） */
+.profile-recent-item.has-thumb {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.profile-recent-text { flex: 1; min-width: 0; }
+.profile-recent-thumb {
+  flex: none;
+  width: 176px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin-top: 2px;
+}
+@media (max-width: 600px) {
+  .profile-recent-thumb { width: 112px; }
 }
 
 /* ---------- 13. List / Taxonomy 页 ---------- */

@@ -15,15 +15,7 @@
   <section class="list-body">
     <div class="profile-recent-list">
       {{- range .Pages.ByDate.Reverse -}}
-        <a class="profile-recent-item" href="{{ .RelPermalink }}">
-          <div class="profile-recent-meta">
-            {{- with index .Params.categories 0 -}}{{ . }} · {{- end -}}
-            {{ .Date.Format "2006-01-02" }}
-            {{- if .ReadingTime }} · 阅读约 {{ .ReadingTime }} min{{- end -}}
-          </div>
-          <div class="profile-recent-title">{{ .Title }}</div>
-          {{- with .Summary -}}<div class="profile-recent-summary">{{ . | plainify | truncate 120 }}</div>{{- end -}}
-        </a>
+        {{- partial "list-item.html" . -}}
       {{- end -}}
     </div>
   </section>

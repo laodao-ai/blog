@@ -9,7 +9,8 @@
 <header class="article-header" data-od-id="article-header">
   <div class="eyebrow">
     {{- with index .Params.categories 0 -}}
-      <a class="eyebrow-tag" href="{{ printf "/categories/%s/" . | relURL }}">{{ . }}</a>
+      {{- /* 分类名要先 urlize：Hugo 生成的词条地址是小写、空格变连字符（AI 开发工作流 → ai-开发工作流），直接拼会 404 */ -}}
+      <a class="eyebrow-tag" href="{{ printf "/categories/%s/" (urlize .) | relURL }}">{{ . }}</a>
     {{- end -}}
     <span class="eyebrow-meta">
       {{ .Date.Format "2006-01-02" }}

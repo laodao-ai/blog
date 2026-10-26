@@ -3,6 +3,11 @@ title: "Hello, 老刀AI工坊"
 slug: "hello-laodao"
 date: 2026-04-29
 draft: true
+# 2026-10-26 作者要求撤下：draft 只挡正式构建，本地 --buildDrafts 预览仍会出现；build 选项让它任何构建都不生成、不进列表
+build:
+  render: never
+  list: never
+  publishResources: false
 summary: "这是老刀AI工坊的第一篇博客文章，本文是阶段 1 的烟雾测试文，用来验证 Hugo + Blowfish 主题对代码块、Mermaid 流程图、表格和 TOC 的渲染能力，同时介绍博客关注的 AI 开发工作流、系统架构、开发测试环境与数据库环境。"
 tags: ["系列开篇", "测试文"]
 categories: ["公告"]

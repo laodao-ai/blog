@@ -33,14 +33,7 @@
     <div class="profile-recent-list">
       {{- $recent := first 6 (where site.RegularPages "Section" "posts") -}}
       {{- range $recent -}}
-        <a class="profile-recent-item" href="{{ .RelPermalink }}">
-          <div class="profile-recent-meta">
-            {{- with index .Params.categories 0 -}}{{ . }} · {{- end -}}
-            {{ .Date.Format "2006-01-02" }} · 阅读约 {{ .ReadingTime }} min
-          </div>
-          <div class="profile-recent-title">{{ .Title }}</div>
-          {{- with .Summary -}}<div class="profile-recent-summary">{{ . | plainify | truncate 120 }}</div>{{- end -}}
-        </a>
+        {{- partial "list-item.html" . -}}
       {{- end -}}
     </div>
   </section>

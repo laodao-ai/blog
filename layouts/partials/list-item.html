@@ -1,0 +1,20 @@
+{{- /*
+  list-item.html · v3 editorial 文章列表条目（首页最近文章、/posts/、分类 / 系列词条页共用）
+  有 hero_image 时右侧放 16:9 缩略图，没有就只出文字（2026-10-26 作者要求列表加缩略图）
+*/ -}}
+{{- $thumb := "" -}}
+{{- with .Params.hero_image -}}
+  {{- with $.Resources.GetMatch . -}}{{- $thumb = .RelPermalink -}}{{- end -}}
+{{- end -}}
+<a class="profile-recent-item{{ if $thumb }} has-thumb{{ end }}" href="{{ .RelPermalink }}">
+  <div class="profile-recent-text">
+    <div class="profile-recent-meta">
+      {{- with index .Params.categories 0 -}}{{ . }} · {{- end -}}
+      {{ .Date.Format "2006-01-02" }}
+      {{- if .ReadingTime }} · 阅读约 {{ .ReadingTime }} min{{- end -}}
+    </div>
+    <div class="profile-recent-title">{{ .Title }}</div>
+    {{- with .Summary -}}<div class="profile-recent-summary">{{ . | plainify | truncate 120 }}</div>{{- end -}}
+  </div>
+  {{- with $thumb -}}<img class="profile-recent-thumb" src="{{ . }}" alt="" loading="lazy">{{- end -}}
+</a>

@@ -9,11 +9,14 @@
   <div class="related-header">相关文章</div>
   <div class="related-grid">
     {{- range $related -}}
+      {{- $p := . -}}
       <a class="related-card" href="{{ .RelPermalink }}">
-        <div class="related-thumb">
-          {{- with .Params.hero_image -}}
-            {{- $img := $.Resources.GetMatch . -}}
-            {{- if $img -}}<img src="{{ $img.RelPermalink }}" alt="" style="width:100%;height:100%;object-fit:cover;">{{- else -}}[ {{ $.Title }} ]{{- end -}}
+        {{- /* 图要从被推荐的这篇取：原写法 $.Resources 指当前文章，每张卡都显示当前文章的封面 */ -}}
+        {{- $img := "" -}}
+        {{- with .Params.hero_image -}}{{- $img = $p.Resources.GetMatch . -}}{{- end -}}
+        <div class="related-thumb{{ if $img }} has-img{{ end }}">
+          {{- with $img -}}
+            <img src="{{ .RelPermalink }}" alt="" loading="lazy">
           {{- else -}}
             [ {{ .Title }} ]
           {{- end -}}
