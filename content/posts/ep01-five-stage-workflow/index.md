@@ -2,18 +2,13 @@
 title: "AI 开发的代码，你敢上生产吗？—— 从失控到可控的五阶段 SDD 工作流"
 slug: "ep01-five-stage-workflow"
 date: 2026-05-06
-draft: true
-# 2026-10-26 作者要求撤下：draft 只挡正式构建，本地 --buildDrafts 预览仍会出现；build 选项让它任何构建都不生成、不进列表
-build:
-  render: never
-  list: never
-  publishResources: false
+draft: false
 summary: "AI 写代码快，但失控也快。把一次完整开发迭代拆出五个失控点，对应五阶段闭环（规格探索→规格评审→可验证实现→代码评审→规格归档），配合 OpenSpec / Superpowers / GStack / Code-Review 四件套，把信息丢失的每一个节点堵上。"
 tags: ["Spec-Driven", "Claude Code", "OpenSpec", "Superpowers", "GStack", "Code-Review", "AI 工作流"]
-categories: ["sdd-工作流"]
-series: ["spec-driven-workflow"]
-series_order: 1
+categories: ["AI 开发工作流"]
 ---
+
+> 写于 2026-05-06，记录当时用四个现成工具拼出来的做法，原样保留。后来这套做法整理成了 SDFlow（[laodao-ai/sdflow-skills](https://github.com/laodao-ai/sdflow-skills)），现行流程见 [SDFlow 系列](/series/sdflow/)。
 
 > 环境：Claude Code 2.0.x · OpenSpec · Superpowers · GStack · Code-Review
 
@@ -34,11 +29,6 @@ AI 开发的代码，你敢上生产吗？
 
 ---
 
-大家好，我是老刀Cheney，分享用 AI 做产品的工程实践。
-
-今天是 **Spec 驱动开发工作流**系列 第 1 篇，聊聊 AI 驱动开发从失控到可控的五阶段工作流。
-
----
 
 ## 不是速度问题，是信任问题
 
@@ -95,7 +85,7 @@ AI 写代码快这件事已经不需要论证了。五分钟写完一个接口�
 | **GStack**（`/plan-eng-review` / `/plan-ceo-review` / `/review` 等）              | 多视角评审框架，让 AI 切换 Eng / CEO / Designer 角色对规格做独立审查 | ② 审规格 |
 | **Code-Review**（`/code-review`）                                                 | Anthropic 官方 PR 评审插件，5 个并行 agent 从不同角度找问题，置信度过滤后上报 | ④ 代码评审 |
 
-每个工具的深入解构，单独有 companion 篇展开（见文末资源区）。下面进入五阶段细节。
+下面进入五阶段细节。
 
 ### 阶段①：规格探索与编写
 
@@ -105,9 +95,9 @@ AI 写代码快这件事已经不需要论证了。五分钟写完一个接口�
 
 工具上用 `/opsx:explore` 做发散。它会提问、挖边界、识别约束，逼着你把想当然的假设说出来。发散完之后 `/opsx:ff` 收敛，产出 proposal.md（做什么、为什么）/ design.md（怎么做、架构决策）/ specs（具体行为规格）/ tasks.md（拆解后的实现任务）。
 
-> 📷 *配图占位：`/opsx:explore` 实际对话片段截图，标红挖边界提问那几行*
+![opsx:ff 产出的 design.md：背景、目标与非目标、关键决策](opsx-ff-output.png)
 
-> 📄 *配图占位：四件套实际产出 — proposal.md / design.md 头部片段*
+`/opsx:ff` 产出的 design.md 头部：背景、目标与非目标，下面接关键决策。
 
 这四个文件是 AI 后续所有动作的上位约束。有了这些，AI 在写任何一行代码时都能参考"当初为什么这么设计"，而不是凭对话记忆推断。
 
@@ -115,7 +105,7 @@ AI 写代码快这件事已经不需要论证了。五分钟写完一个接口�
 
 > 规格阶段改一个矛盾，成本接近零。等代码写完再改需求，成本是指数增长的。
 
-→ 规格怎么探索、怎么写得"刚好够"而不变成文档负担，ep04 展开。OpenSpec 工具链全景见 *companion-2 · OpenSpec 深度解析*（未发布）。本阶段的具体 skill 和 prompt 模板，见文末「Skills 怎么用？」速查表。
+本阶段的具体 skill 和 prompt 模板，见文末「Skills 怎么用？」速查表。
 
 ---
 
@@ -135,13 +125,13 @@ AI 写代码快这件事已经不需要论证了。五分钟写完一个接口�
 
 为什么要强制画图？因为图里没法含糊。文字可以写"处理异常情况"，图里就得画出异常从哪里来、到哪里去、状态怎么变。画不出来的东西，就是没想清楚的设计。
 
-> 🖼 *配图占位：`/plan-eng-review` 生成的状态机示例*
+![plan-eng-review 在 eng-review.md 里画的会话状态机](eng-review-state-machine.png)
+
+`/plan-eng-review` 在 eng-review.md 里画的编排会话状态机，每个状态和转移都要写出来。
 
 **HARD-GATE**：这个阶段的评审不通过，严禁进入编码。不是建议，是硬约束。原因很简单：一旦开始写代码，设计就开始固化了，改的成本立刻翻倍。在动手前把设计问题解决掉，才是真正便宜的做法。
 
 还有一个操作细节：brainstorming 结束后、进入 eng-review 前，**`/clear` 清空上下文**（安全点 A）。这是认知管理。带着"我设计了这个方案"的偏见去审查，AI 会下意识帮你圆逻辑；清空后重新读规格，才能以陌生视角真正找到问题。
-
-→ 规格评审的检查清单和常见盲点，ep05 展开。Superpowers 与 GStack 的全景，分别见 *companion-1 · SuperPowers 深度解析* 与 *companion-3 · GStack 深度解析*（均未发布）。
 
 ---
 
@@ -157,13 +147,9 @@ AI 写代码快这件事已经不需要论证了。五分钟写完一个接口�
 
 实现阶段用 `/subagent-driven-development` 驱动多个 SubAgent 并行执行不相互依赖的任务，TDD 模式每步验证：先写测试，再写实现，测试通过才继续。
 
-> 🖼 *配图占位：SubAgent 并行执行任务流截图，多 agent 同时跑 TDD 步骤*
-
 TDD 在这里的价值不是测试覆盖率，是**确定性**。每一步都有一个明确的通过/不通过判断，没有"差不多"、没有"应该对"，只有测试是否通过。
 
 实现完成后、代码评审前：**`/clear`（安全点 C）**。让 review 以客观视角读代码，而不是带着"我刚写了这段，它是对的"的认同感扫 diff。
-
-→ 任务粒度怎么拆、TDD 在 AI 协作里到底怎么用，ep06 展开。Superpowers 全景见 *companion-1 · SuperPowers 深度解析*（未发布）。
 
 ---
 
@@ -183,13 +169,9 @@ TDD 在这里的价值不是测试覆盖率，是**确定性**。每一步都有
 
 推送 PR 之后，`/code-review` 用 5 个并行 agent 从不同角度再审一遍，≥80% 置信度的问题才上报，过滤掉 AI 审查常见的噪点。
 
-> 🖼 *配图占位：`/code-review` 5 个并行 agent 输出片段，标出置信度过滤前后对比*
-
 **Fix-First 策略**：能机械修复的问题（格式、命名、简单逻辑错误）直接修，有歧义的才打断询问。目的是减少来回确认，让这一步聚焦在真正需要人判断的问题上。
 
 评审改完之后，下一步是把规格回写。为什么这一步必须放在 review 之后、不能反过来——下一节展开。
-
-→ Staff 视角对抗审查的具体清单、code-review 多 agent 的协作机制，ep07 展开。
 
 ---
 
@@ -236,37 +218,13 @@ TDD 在这里的价值不是测试覆盖率，是**确定性**。每一步都有
 
 > 适用：Claude Code 2.0.x + OpenSpec / Superpowers / GStack / Code-Review
 
-| 阶段      | 主用 skill                                          | 按需触发 skill（条件）                                      | 典型 prompt（精选）                                                                                                                                                                                                                                                                                                                                              | 详见 |
-| ------- | ------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
-| ① 探索与编写 | `/opsx:explore` + `/opsx:ff`                      | `/office-hour（新产品决策时）`                              | `/opsx:ff {change}。生成 design.md 须遵守：D-1 代码事实（函数名/DB字段/API路径）先 grep 验证再写入，禁止从记忆直接写入；D-3 每处"不在范围内"附可证伪假设，不得写空泛的"超出范围"；D-4 外部依赖（DB/缓存/第三方API）声明超时时间，写操作说明回滚路径。命中 R1 时追加 D-2：design.md 须含 v_old/v_new 完整列清单（列名+类型+约束+默认值+nullable）。`                                                                                                                           | ep04 / companion-2 |
-| ② 规格评审  | `/brainstorming` + `/plan-eng-review`             | `/plan-ceo-review`（涉产品方向决策时）<br>Outside Voice（高争议时） | `/brainstorming 先按 @openspec/checklist/spec-quality-checklist.md 阻塞级检查项逐一检查 {change dir} 目录中文档（完整性/无占位符/验收标准/规则合规/平台可行性），修复阻塞级问题后再审视和精炼方案，发现盲点和替代方案,可以提问新的问题,提供新的方案选择;不要创建新设计文件，直接更新相关文档，标注 [brainstorm-amendment]。完成后在 design.md 末尾追加"决策记录"章节，记录被否决的方案和理由。`                                                                                               | ep05 / companion-3 |
-| ③ 可验证实现 | `/writing-plans` + `/subagent-driven-development` | TDD 单步（小变更直接走）                                      | `/writing-plans 按照 {change dir} 目录中 design.md 和 eng-review.md 中的设计和审查结论，生成原子任务清单计划文件 superpowers-plan.md。每个任务的测试验证策略为 TDD（RED-GREEN-REFACTOR）。参考 tasks.md 的任务分组结构。`                                                                                                                                                                                  | ep06 / companion-1 |
-| ④ 代码评审  | `/review` + `/code-review`                        | `/investigate`（review 报告深问题需挖根因）                    | `/review 独立审查当前 change 的代码变更，文档在 {change dir} 目录下；重点检查 code-review-checklist 第1节（错误处理正确性）、第4节（数据库操作安全）、第6节（并发安全与互斥）[命中R1时重点第4节全部条目，命中R3时增加第7节HTTP Handler安全]；对 eng-review.md 或 design.md 中所有声明已修复或已处理的问题，MUST 通过 grep 在代码中验证其存在，不得仅凭断言通过；生成 staff-review-report.md 保存到 {change dir}。然后修复 review 发现的问题，并更新相关文档。` | ep07 |
-| ⑤ 归档与维护 | `/opsx:apply` + `/opsx:verify` + `/opsx:archive`  | 自制 `/opsx-maintain`（spec 多到需建索引时）                   | `/opsx:apply <change>` → `/opsx:verify` → `/opsx:archive`                                                                                                                                                                                                                                                                                                  | ep08 |
-
-📎 **完整 prompt 模板**（含 R1-R6 强制 triage 自检、D-1~D-4 硬约束注入、S/M/L 三档分支细节）随系列后续篇逐一拆解，并与附属 checklist 同步开源。
-
----
-
-## 框架看明白 ≠ 真的跑过一遍
-
-读到这里你知道五阶段闭环长什么样、每阶段堵的是哪个失控点、配套用哪些 skill。但理论和实操之间还隔着一层：
-
-- `/opsx:explore` 的实战对话，哪几句提问真正挖到了边界？
-- 阶段②的状态机图，AI 第一次画出来的能直接用吗，我改了几遍？
-- 任务拆到函数级，跑到第几步会发现拆得不够细？
-- 阶段④的 5 个 agent 输出长什么样，置信度过滤之后剩几条？
-- 阶段⑤回写规格时，最容易漏掉的是什么？
-
-这些靠截图说明是不够的，得有一次完整的实录。
-
-**下一篇 ep02：跟我跑一遍五阶段——从一句话需求到 PR 归档的全程实录**
-
-我从"给短链服务加一个限流"这一句需求出发，把五阶段全程跑给你看：每个 prompt 我怎么写、AI 第一次回什么、我哪里改了方案、归档时长什么样。中间踩的坑也不剪掉。不是教科书写法，是真实节奏。
-
----
-
-你目前的开发流程里，哪个断点最容易出问题？是代码写出来了才发现需求理解有偏差，还是上了生产才发现有边界问题？欢迎评论区聊聊。
+| 阶段      | 主用 skill                                          | 按需触发 skill（条件）                                      | 典型 prompt（精选） |
+| ------- | ------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ① 探索与编写 | `/opsx:explore` + `/opsx:ff`                      | `/office-hour（新产品决策时）`                              | `/opsx:ff {change}。生成 design.md 须遵守：D-1 代码事实（函数名/DB字段/API路径）先 grep 验证再写入，禁止从记忆直接写入；D-3 每处"不在范围内"附可证伪假设，不得写空泛的"超出范围"；D-4 外部依赖（DB/缓存/第三方API）声明超时时间，写操作说明回滚路径。命中 R1 时追加 D-2：design.md 须含 v_old/v_new 完整列清单（列名+类型+约束+默认值+nullable）。` |
+| ② 规格评审  | `/brainstorming` + `/plan-eng-review`             | `/plan-ceo-review`（涉产品方向决策时）<br>Outside Voice（高争议时） | `/brainstorming 先按 @openspec/checklist/spec-quality-checklist.md 阻塞级检查项逐一检查 {change dir} 目录中文档（完整性/无占位符/验收标准/规则合规/平台可行性），修复阻塞级问题后再审视和精炼方案，发现盲点和替代方案,可以提问新的问题,提供新的方案选择;不要创建新设计文件，直接更新相关文档，标注 [brainstorm-amendment]。完成后在 design.md 末尾追加"决策记录"章节，记录被否决的方案和理由。` |
+| ③ 可验证实现 | `/writing-plans` + `/subagent-driven-development` | TDD 单步（小变更直接走）                                      | `/writing-plans 按照 {change dir} 目录中 design.md 和 eng-review.md 中的设计和审查结论，生成原子任务清单计划文件 superpowers-plan.md。每个任务的测试验证策略为 TDD（RED-GREEN-REFACTOR）。参考 tasks.md 的任务分组结构。` |
+| ④ 代码评审  | `/review` + `/code-review`                        | `/investigate`（review 报告深问题需挖根因）                    | `/review 独立审查当前 change 的代码变更，文档在 {change dir} 目录下；重点检查 code-review-checklist 第1节（错误处理正确性）、第4节（数据库操作安全）、第6节（并发安全与互斥）[命中R1时重点第4节全部条目，命中R3时增加第7节HTTP Handler安全]；对 eng-review.md 或 design.md 中所有声明已修复或已处理的问题，MUST 通过 grep 在代码中验证其存在，不得仅凭断言通过；生成 staff-review-report.md 保存到 {change dir}。然后修复 review 发现的问题，并更新相关文档。` |
+| ⑤ 归档与维护 | `/opsx:apply` + `/opsx:verify` + `/opsx:archive`  | 自制 `/opsx-maintain`（spec 多到需建索引时）                   | `/opsx:apply <change>` → `/opsx:verify` → `/opsx:archive` |
 
 ---
 
@@ -276,17 +234,6 @@ TDD 在这里的价值不是测试覆盖率，是**确定性**。每一步都有
   - [OpenSpec](https://github.com/Fission-AI/OpenSpec) · 规格管理框架
   - [Superpowers](https://github.com/obra/superpowers) · 开发执行工作流
   - [GStack](https://github.com/garrytan/gstack) · 多视角审查
-  - [Code-Review](https://github.com/anthropics/claude-code/tree/main/plugins/code-review) · 多 agent PR 评审
+  - [Code-Review](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/code-review) · 多 agent PR 评审
 - **配套开源资产仓库** [`laodao-ai/sdd-toolkit`](https://github.com/laodao-ai/sdd-toolkit)
-  - [`checklists/spec-quality.md`](https://github.com/laodao-ai/sdd-toolkit/blob/main/checklists/spec-quality.md) · 规格编写阶段自检
-  - [`checklists/spec-review.md`](https://github.com/laodao-ai/sdd-toolkit/blob/main/checklists/spec-review.md) · 规格评审阶段对照
-  - [`checklists/code-review.md`](https://github.com/laodao-ai/sdd-toolkit/blob/main/checklists/code-review.md) · 代码评审阶段对抗清单
-  - 完整 prompt 模板 + 自制 `opsx-maintain` skill 跟系列后续篇同步开源
-
-> 📌 与传统软件开发、敏捷开发的对比，单独成番外篇，不在本文展开。
-
----
-
-> **本系列**：Spec 驱动开发工作流
-> 上一篇：无
-> 下一篇：ep02 · 跟我跑一遍五阶段——从一句话需求到 PR 归档的全程实录（未发布）
+  - [`checklists/`](https://github.com/laodao-ai/sdd-toolkit/tree/main/checklists) · 规格编写、规格评审、代码评审三类清单，按通用、Go、嵌入式分层
