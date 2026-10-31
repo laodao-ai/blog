@@ -2,7 +2,7 @@
 title: "AI 写的 Spec，能直接生成代码吗？"
 slug: "review-spec-before-code"
 date: 2026-10-30
-draft: true
+draft: false
 summary: "规格写完直接生成代码，规格错了开发也照做；错得一致，测试全绿也发现不了。写代码前先审一道：派独立的 agent 分角度审，先核引用再逐条裁决，人只答三问、拍要拍的板，批准后锁住规格。再算一笔账：多花的时间和 token 值不值，评审漏掉的怎么补。"
 tags: ["规格评审", "规格驱动开发", "SDFlow", "gstack", "OpenSpec", "Claude Code", "AI 开发工作流"]
 categories: ["AI 开发工作流"]
