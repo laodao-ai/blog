@@ -1,7 +1,7 @@
 ---
 title: "Spec 写好了，为什么不一口气生成代码？"
 slug: "split-and-verify"
-date: 2026-11-05T20:00:00+08:00
+date: 2026-11-06T20:00:00+08:00
 draft: true
 summary: "规格批准了，AI 一次改几十个文件，测试全绿，却说不清哪条需求做到了、哪些测试是后补的。我把开发任务拆成能单独验收的 ticket，带上需求编号和验收项，交给新的 agent 先写测试再写代码。视频对照三套做法，也看一次没有遵守 TDD 的真实记录：先查顺序，再改坏代码验测试，最后全量跑测试、留下证据。"
 tags: ["AI编程", "TDD", "规格驱动开发", "SDFlow", "Superpowers", "Matt Pocock", "Claude Code"]
@@ -19,7 +19,7 @@ github_label: "示例项目 demo-temp-monitor"
 
 视频里我把“从规格到代码”拆成两部分：先把开发任务拆到能单独验收，再让新的 agent 按测试先行的顺序做完，每一步留审查和验证证据。
 
-视频：[B站 · Spec 写好了，为什么不一口气生成代码？](TODO(video-url)) · [YouTube](TODO(video-url))
+视频：[B站 · Spec 写好了，为什么不一口气生成代码？](https://www.bilibili.com/video/BV1hZxX6eEKD/) · [YouTube](https://youtu.be/fvmItQ9TuPk)
 
 ## 视频里聊了什么
 
