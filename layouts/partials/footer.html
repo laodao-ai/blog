@@ -5,3 +5,8 @@
 {{- partial "wechat-modal.html" . -}}
 {{- /* [followup-article-bug] 长代码块折叠 + 展开按钮 */ -}}
 {{- partial "code-collapse.html" . -}}
+{{- /* 国内站手动接入统计；国际站由 Cloudflare 自动注入，不配置此 token。 */ -}}
+{{- with site.Params.cloudflareWebAnalyticsToken -}}
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js"
+  data-cf-beacon="{{ dict "token" . | jsonify }}"></script>
+{{- end -}}

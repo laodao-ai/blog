@@ -3,6 +3,7 @@ beianNumber = "沪ICP备19016066号-8"
 beianUrl = "https://beian.miit.gov.cn"
 policeBeianNumber = "沪公网安备31011202023866号"
 policeBeianCode = "31011202023866"  # 用于跳转 mps.gov.cn 查询页 query 参数
+cloudflareWebAnalyticsToken = "df5d758353894c1ba857ee13242d55ac"
 
 [article]
 sharingLinks = ["weibo", "wechat-copy", "email"]
