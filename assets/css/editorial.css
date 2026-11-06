@@ -869,6 +869,8 @@ html {
 }
 .editorial-beian a { color: var(--muted); text-decoration: none; }
 .editorial-beian a:hover { color: var(--accent); }
+.editorial-beian .police-beian { display: inline-flex; align-items: center; gap: 4px; }
+.police-beian img { display: block; width: 18px; height: auto; }
 
 /* ---------- 11. Pagination（prev/next，v3 token 重写） ---------- */
 .editorial-pagination {

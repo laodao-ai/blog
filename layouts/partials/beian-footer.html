@@ -13,7 +13,11 @@
   {{- with $.Site.Params.policeBeianNumber -}}
   <div>
     <a href="https://beian.mps.gov.cn/#/query/webSearch?code={{ $.Site.Params.policeBeianCode }}"
-       target="_blank" rel="noopener noreferrer">{{ . }}</a>
+       class="police-beian" target="_blank" rel="noopener noreferrer">
+      {{- /* 图标来源：https://beian.mps.gov.cn/web/assets/logo01.6189a29f.png */ -}}
+      <img src="{{ "img/police-beian.png" | relURL }}" width="18" height="20" alt="" aria-hidden="true">
+      <span>{{ . }}</span>
+    </a>
   </div>
   {{- end -}}
 </div>

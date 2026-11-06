@@ -2,7 +2,7 @@
 title: "Spec 写好了，为什么不一口气生成代码？"
 slug: "split-and-verify"
 date: 2026-11-06T20:00:00+08:00
-draft: true
+draft: false
 summary: "规格批准了，AI 一次改几十个文件，测试全绿，却说不清哪条需求做到了、哪些测试是后补的。我把开发任务拆成能单独验收的 ticket，带上需求编号和验收项，交给新的 agent 先写测试再写代码。视频对照三套做法，也看一次没有遵守 TDD 的真实记录：先查顺序，再改坏代码验测试，最后全量跑测试、留下证据。"
 tags: ["AI编程", "TDD", "规格驱动开发", "SDFlow", "Superpowers", "Matt Pocock", "Claude Code"]
 categories: ["AI 开发工作流"]
